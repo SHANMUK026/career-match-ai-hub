@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +17,14 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleSignUp = () => {
+    navigate('/signup');
+  };
 
   return (
     <header
@@ -51,10 +60,10 @@ const Header = () => {
 
         {/* Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="outline" className="rounded-md">
+          <Button variant="outline" className="rounded-md" onClick={handleLogin}>
             Login
           </Button>
-          <Button className="bg-primary-gradient rounded-md">
+          <Button className="bg-primary-gradient rounded-md" onClick={handleSignUp}>
             Sign Up
           </Button>
         </div>
@@ -91,10 +100,10 @@ const Header = () => {
             </nav>
 
             <div className="flex flex-col space-y-3">
-              <Button variant="outline" className="w-full justify-center">
+              <Button variant="outline" className="w-full justify-center" onClick={handleLogin}>
                 Login
               </Button>
-              <Button className="w-full justify-center bg-primary-gradient">
+              <Button className="w-full justify-center bg-primary-gradient" onClick={handleSignUp}>
                 Sign Up
               </Button>
             </div>

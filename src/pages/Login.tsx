@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +21,9 @@ const formSchema = z.object({
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/payment';
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,8 +36,12 @@ const Login = () => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
     // In a real app, this would make an API call to authenticate
+    // For demonstration, we'll just set a dummy token
+    localStorage.setItem('auth_token', 'dummy-token');
+    localStorage.setItem('user_email', values.email);
+    
     toast.success("Login successful");
-    navigate('/dashboard');
+    navigate(from);
   };
 
   return (

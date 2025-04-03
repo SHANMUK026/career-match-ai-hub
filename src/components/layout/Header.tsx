@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,12 +20,30 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Check if user is logged in
+    const authToken = localStorage.getItem('auth_token');
+    setIsLoggedIn(!!authToken);
+  }, []);
+
   const handleLogin = () => {
     navigate('/login');
   };
 
   const handleSignUp = () => {
     navigate('/signup');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_email');
+    setIsLoggedIn(false);
+    toast.success("Logged out successfully");
+    navigate('/');
+  };
+
+  const handleDashboard = () => {
+    navigate('/dashboard');
   };
 
   return (
@@ -60,12 +80,27 @@ const Header = () => {
 
         {/* Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="outline" className="rounded-md" onClick={handleLogin}>
-            Login
-          </Button>
-          <Button className="bg-primary-gradient rounded-md" onClick={handleSignUp}>
-            Sign Up
-          </Button>
+          {isLoggedIn ? (
+            <>
+              <Button variant="outline" onClick={handleDashboard} className="rounded-md">
+                <User className="mr-2 h-4 w-4" />
+                Dashboard
+              </Button>
+              <Button onClick={handleLogout} className="bg-primary-gradient rounded-md">
+                <LogOut className="mr-2 h-4 w-4" />
+                Log out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" className="rounded-md" onClick={handleLogin}>
+                Login
+              </Button>
+              <Button className="bg-primary-gradient rounded-md" onClick={handleSignUp}>
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -100,12 +135,27 @@ const Header = () => {
             </nav>
 
             <div className="flex flex-col space-y-3">
-              <Button variant="outline" className="w-full justify-center" onClick={handleLogin}>
-                Login
-              </Button>
-              <Button className="w-full justify-center bg-primary-gradient" onClick={handleSignUp}>
-                Sign Up
-              </Button>
+              {isLoggedIn ? (
+                <>
+                  <Button variant="outline" onClick={handleDashboard} className="w-full justify-center">
+                    <User className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Button>
+                  <Button onClick={handleLogout} className="w-full justify-center bg-primary-gradient">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" className="w-full justify-center" onClick={handleLogin}>
+                    Login
+                  </Button>
+                  <Button className="w-full justify-center bg-primary-gradient" onClick={handleSignUp}>
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -56,8 +56,13 @@ const SignUp = () => {
   const handleProfileCreated = (profileData: any) => {
     // In a real app, this would update the user profile in the database
     console.log("Profile data:", profileData);
+    
+    // Set auth token to simulate successful authentication
+    localStorage.setItem('auth_token', 'dummy-token');
+    localStorage.setItem('user_email', userData.email);
+    
     toast.success("Profile created successfully!");
-    navigate('/dashboard');
+    navigate('/payment');
   };
 
   return (

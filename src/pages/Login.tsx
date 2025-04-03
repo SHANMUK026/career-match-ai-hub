@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Mail, Lock } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -23,6 +24,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || '/payment';
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,15 +35,26 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    // In a real app, this would make an API call to authenticate
-    // For demonstration, we'll just set a dummy token
-    localStorage.setItem('auth_token', 'dummy-token');
-    localStorage.setItem('user_email', values.email);
-    
-    toast.success("Login successful");
-    navigate(from);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Login successful");
+      navigate(from);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to log in");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -127,8 +140,12 @@ const Login = () => {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full bg-primary-gradient">
-                Log in
+              <Button 
+                type="submit" 
+                className="w-full bg-primary-gradient"
+                disabled={isLoading}
+              >
+                {isLoading ? "Logging in..." : "Log in"}
               </Button>
 
               <div className="text-center mt-4">

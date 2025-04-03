@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { Session } from '@supabase/supabase-js';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,9 +23,24 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Check if user is logged in
-    const authToken = localStorage.getItem('auth_token');
-    setIsLoggedIn(!!authToken);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      }
+    );
+
+    // Check for an existing session
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+
+    checkSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogin = () => {
@@ -34,12 +51,20 @@ const Header = () => {
     navigate('/signup');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_email');
-    setIsLoggedIn(false);
-    toast.success("Logged out successfully");
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      
+      toast.success("Logged out successfully");
+      navigate('/');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to log out");
+    }
   };
 
   const handleDashboard = () => {
@@ -80,7 +105,7 @@ const Header = () => {
 
         {/* Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
-          {isLoggedIn ? (
+          {session ? (
             <>
               <Button variant="outline" onClick={handleDashboard} className="rounded-md">
                 <User className="mr-2 h-4 w-4" />
@@ -135,7 +160,7 @@ const Header = () => {
             </nav>
 
             <div className="flex flex-col space-y-3">
-              {isLoggedIn ? (
+              {session ? (
                 <>
                   <Button variant="outline" onClick={handleDashboard} className="w-full justify-center">
                     <User className="mr-2 h-4 w-4" />

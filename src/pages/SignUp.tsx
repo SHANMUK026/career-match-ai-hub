@@ -6,34 +6,63 @@ import AccountCreationForm, { signUpSchema } from '@/components/auth/AccountCrea
 import ProfileCreationForm from '@/components/auth/ProfileCreationForm';
 import SignUpContainer from '@/components/auth/SignUpContainer';
 import { z } from 'zod';
+import { supabase } from '@/integrations/supabase/client';
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [userData, setUserData] = useState<any>(null);
   
-  const handleAccountCreation = (values: z.infer<typeof signUpSchema>) => {
-    console.log(values);
-    // In a real app, this would make an API call to create the account
-    toast.success("Account created successfully!");
-    setUserData({
-      email: values.email,
-      // In a real app, you would never store the password in state
-      // This is just for demonstration purposes
-    });
-    setStep(2);
+  const handleAccountCreation = async (values: z.infer<typeof signUpSchema>) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (data?.user) {
+        toast.success("Account created successfully!");
+        setUserData({
+          email: values.email,
+          id: data.user.id
+        });
+        setStep(2);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create account");
+    }
   };
 
-  const handleProfileCreated = (profileData: any) => {
-    // In a real app, this would update the user profile in the database
-    console.log("Profile data:", profileData);
-    
-    // Set auth token to simulate successful authentication
-    localStorage.setItem('auth_token', 'dummy-token');
-    localStorage.setItem('user_email', userData.email);
-    
-    toast.success("Profile created successfully!");
-    navigate('/payment');
+  const handleProfileCreated = async (profileData: any) => {
+    try {
+      // The profile is automatically created by the trigger
+      // We can update it with additional info
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: profileData.firstName,
+          last_name: profileData.lastName
+        })
+        .eq('id', userData.id);
+      
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      
+      toast.success("Profile created successfully!");
+      navigate('/payment');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+    }
   };
 
   return (

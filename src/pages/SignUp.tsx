@@ -44,7 +44,7 @@ const SignUp = () => {
   const handleProfileCreated = async (profileData: any) => {
     try {
       // The profile is automatically created by the trigger
-      // We can update it with additional info
+      // We can update it directly without specifying the table name
       const { error } = await supabase
         .from('profiles')
         .update({

@@ -8,8 +8,10 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
+import JobDetail from "./pages/JobDetail";
 import Employers from "./pages/Employers";
 import Assessments from "./pages/Assessments";
+import MockInterview from "./pages/MockInterview";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -30,6 +32,11 @@ const App = () => (
           <Route path="/signup" element={<SignUp />} />
           <Route path="/contact" element={<Contact />} />
           
+          {/* Public job routes */}
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/:id" element={<JobDetail />} />
+          <Route path="/employers" element={<Employers />} />
+          
           {/* Protected routes - only accessible after login */}
           <Route 
             path="/dashboard" 
@@ -40,26 +47,18 @@ const App = () => (
             } 
           />
           <Route 
-            path="/jobs" 
-            element={
-              <ProtectedRoute>
-                <Jobs />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/employers" 
-            element={
-              <ProtectedRoute>
-                <Employers />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
             path="/assessments" 
             element={
               <ProtectedRoute>
                 <Assessments />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/mock-interview" 
+            element={
+              <ProtectedRoute>
+                <MockInterview />
               </ProtectedRoute>
             } 
           />

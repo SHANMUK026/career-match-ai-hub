@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Briefcase, MapPin, DollarSign } from 'lucide-react';
@@ -62,6 +63,8 @@ const jobListings = [
 ];
 
 const JobListingsSection = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -81,7 +84,10 @@ const JobListingsSection = () => {
                     <img src={job.logo} alt={job.company} className="w-8 h-8 object-contain" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">
+                    <h3 
+                      className="text-lg font-bold mb-1 group-hover:text-primary transition-colors cursor-pointer"
+                      onClick={() => navigate(`/jobs/${job.id}`)}
+                    >
                       {job.title}
                     </h3>
                     <p className="text-gray-600">{job.company}</p>
@@ -105,7 +111,10 @@ const JobListingsSection = () => {
               </CardContent>
               
               <CardFooter className="bg-gray-50 px-6 py-4 border-t">
-                <Button className="w-full bg-white hover:bg-primary hover:text-white transition-colors border border-gray-200 text-gray-700">
+                <Button 
+                  className="w-full bg-white hover:bg-primary hover:text-white transition-colors border border-gray-200 text-gray-700"
+                  onClick={() => navigate(`/jobs/${job.id}`)}
+                >
                   Apply Now
                 </Button>
               </CardFooter>
@@ -114,7 +123,7 @@ const JobListingsSection = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <Button className="btn-primary">
+          <Button className="btn-primary" onClick={() => navigate('/jobs')}>
             View All Jobs
           </Button>
         </div>

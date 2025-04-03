@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Search, Filter, MapPin, BriefcaseBusiness, Clock, DollarSign } from 'lu
 
 const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
   
   // Sample job data
   const jobs = [
@@ -182,7 +184,12 @@ const Jobs = () => {
                 {jobs.map(job => (
                   <div key={job.id} className="bg-white rounded-lg shadow p-5 hover:shadow-md transition-shadow duration-300">
                     <div className="flex justify-between mb-2">
-                      <h3 className="font-semibold text-xl text-primary hover:underline cursor-pointer">{job.title}</h3>
+                      <h3 
+                        className="font-semibold text-xl text-primary hover:underline cursor-pointer"
+                        onClick={() => navigate(`/jobs/${job.id}`)}
+                      >
+                        {job.title}
+                      </h3>
                       <Button variant="outline" className="text-sm px-3 py-1 h-auto">Save</Button>
                     </div>
                     <h4 className="font-medium mb-3">{job.company}</h4>
@@ -206,7 +213,12 @@ const Jobs = () => {
                         <Clock size={16} className="mr-1" />
                         Posted {job.posted}
                       </div>
-                      <Button className="bg-primary-gradient transition-transform hover:scale-105">Apply Now</Button>
+                      <Button 
+                        className="bg-primary-gradient transition-transform hover:scale-105"
+                        onClick={() => navigate(`/jobs/${job.id}`)}
+                      >
+                        Apply Now
+                      </Button>
                     </div>
                   </div>
                 ))}

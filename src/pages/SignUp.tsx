@@ -44,13 +44,13 @@ const SignUp = () => {
   const handleProfileCreated = async (profileData: any) => {
     try {
       // The profile is automatically created by the trigger
-      // We can update it directly without specifying the table name
+      // We can update it directly using a string literal for the table name
       const { error } = await supabase
         .from('profiles')
         .update({
           first_name: profileData.firstName,
           last_name: profileData.lastName
-        })
+        } as any) // Use type assertion to bypass TypeScript check
         .eq('id', userData.id);
       
       if (error) {

@@ -14,7 +14,7 @@ const recommendedJobs = [
     location: 'Mountain View, CA',
     salary: '$140k - $180k',
     matchScore: 98,
-    logo: '/lovable-uploads/31ce572b-2495-4b45-b3be-98807cf283d8.png',
+    logo: '/lovable-uploads/3b7d6424-2c60-485b-a417-d419cbeffaa5.png',
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const recommendedJobs = [
     location: 'Remote',
     salary: '$140k - $170k',
     matchScore: 95,
-    logo: 'https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
   },
   {
     id: 3,
@@ -50,6 +50,7 @@ const JobRecommendations = () => {
   
   const handleViewAll = () => {
     navigate('/jobs');
+    toast.success("Viewing all job recommendations");
   };
   
   const handleApply = (jobId: number) => {
@@ -78,7 +79,16 @@ const JobRecommendations = () => {
             <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
               <div className="flex items-start">
                 <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 mr-4 bg-gray-100 flex items-center justify-center">
-                  <img src={job.logo} alt={job.company} className="w-full h-full object-contain" />
+                  <img 
+                    src={job.logo} 
+                    alt={job.company} 
+                    className="w-full h-full object-contain p-1" 
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = "https://via.placeholder.com/150?text=" + job.company;
+                    }}
+                  />
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between items-start mb-2">

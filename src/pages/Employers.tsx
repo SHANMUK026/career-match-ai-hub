@@ -5,6 +5,8 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Search, BriefcaseBusiness, MapPin, Star, Users, ChevronRight, Building } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Employers = () => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -20,7 +22,7 @@ const Employers = () => {
       openPositions: 14,
       rating: 4.8,
       employees: '150,000+',
-      logo: '/lovable-uploads/31ce572b-2495-4b45-b3be-98807cf283d8.png',
+      logo: '/lovable-uploads/3b7d6424-2c60-485b-a417-d419cbeffaa5.png',
       color: 'bg-blue-50'
     },
     {
@@ -32,7 +34,7 @@ const Employers = () => {
       openPositions: 8,
       rating: 4.6,
       employees: '180,000+',
-      logo: 'https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
       color: 'bg-indigo-50'
     },
     {
@@ -82,12 +84,33 @@ const Employers = () => {
       employees: '12,000+',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png',
       color: 'bg-red-50'
+    },
+    {
+      id: 7,
+      name: 'Tesla',
+      industry: 'Automotive & Tech',
+      location: 'Austin, TX',
+      description: 'Electric vehicle and clean energy company revolutionizing transportation',
+      openPositions: 16,
+      rating: 4.3,
+      employees: '100,000+',
+      logo: '/lovable-uploads/e0ced664-b053-4289-a65e-70ad432c63dd.png',
+      color: 'bg-green-50'
     }
   ];
 
   const filterCompanies = (filter: string) => {
     setActiveFilter(filter);
+    toast.success(`Filtered to show ${filter} companies`);
     // In a real app, this would filter the companies based on criteria
+  };
+
+  const handleViewJobs = (companyName: string) => {
+    toast.success(`Viewing jobs at ${companyName}`);
+  };
+
+  const handleViewCompanyProfile = (companyName: string) => {
+    toast.success(`Viewing ${companyName}'s company profile`);
   };
 
   return (
@@ -150,6 +173,13 @@ const Employers = () => {
             >
               Remote Only
             </Button>
+            <Button 
+              variant={activeFilter === 'startup' ? 'default' : 'outline'}
+              onClick={() => filterCompanies('startup')}
+              className={activeFilter === 'startup' ? 'bg-primary' : ''}
+            >
+              Startups
+            </Button>
           </div>
           
           {/* Main content */}
@@ -162,7 +192,16 @@ const Employers = () => {
                   <div className={`p-6 ${employer.color}`}>
                     <div className="flex items-center mb-4">
                       <div className="w-16 h-16 bg-white rounded-md shadow-sm p-2 flex items-center justify-center mr-4">
-                        <img src={employer.logo} alt={employer.name} className="max-h-full max-w-full object-contain" />
+                        <img 
+                          src={employer.logo} 
+                          alt={employer.name} 
+                          className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null;
+                            target.src = "https://via.placeholder.com/150?text=" + employer.name;
+                          }}
+                        />
                       </div>
                       <div>
                         <h3 className="font-semibold text-xl text-primary">{employer.name}</h3>
@@ -195,10 +234,17 @@ const Employers = () => {
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <Button className="bg-primary-gradient hover:opacity-90 transition-all">
+                      <Button 
+                        className="bg-primary-gradient hover:opacity-90 transition-all"
+                        onClick={() => handleViewJobs(employer.name)}
+                      >
                         View Jobs
                       </Button>
-                      <Button variant="outline" className="flex items-center">
+                      <Button 
+                        variant="outline" 
+                        className="flex items-center"
+                        onClick={() => handleViewCompanyProfile(employer.name)}
+                      >
                         Company Profile <ChevronRight size={16} />
                       </Button>
                     </div>
@@ -215,12 +261,16 @@ const Employers = () => {
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Find Your Perfect Candidates?</h2>
               <p className="mb-6 text-white/80">Post a job today and get matched with qualified candidates through our AI-driven platform.</p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button className="bg-white text-primary hover:bg-gray-100 transition-colors">
-                  Post a Job
-                </Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                  Learn About Our Process
-                </Button>
+                <Link to="/jobs">
+                  <Button className="bg-white text-primary hover:bg-gray-100 transition-colors">
+                    Post a Job
+                  </Button>
+                </Link>
+                <Link to="/assessments">
+                  <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                    Learn About Our Process
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
+import { Link } from 'react-router-dom';
 
 const CompaniesSection = () => {
   const companies = [
@@ -10,56 +11,64 @@ const CompaniesSection = () => {
       logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
       description: 'A multinational technology company developing software, hardware, and related services',
       jobCount: 42,
-      industry: 'Technology'
+      industry: 'Technology',
+      path: '/employers'
     },
     { 
       name: 'Google', 
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
+      logo: '/lovable-uploads/3b7d6424-2c60-485b-a417-d419cbeffaa5.png',
       description: 'A global technology leader focused on search, cloud computing, and online advertising',
       jobCount: 38,
-      industry: 'Technology'
+      industry: 'Technology',
+      path: '/employers'
     },
     { 
       name: 'Apple', 
       logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
       description: 'An innovative technology company known for premium hardware, software, and services',
       jobCount: 29,
-      industry: 'Technology'
+      industry: 'Technology',
+      path: '/employers'
     },
     { 
       name: 'Amazon', 
       logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
       description: 'A multinational technology company focusing on e-commerce, cloud computing, and AI',
       jobCount: 57,
-      industry: 'E-commerce/Technology'
+      industry: 'E-commerce/Technology',
+      path: '/employers'
     },
     { 
       name: 'Meta', 
       logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
       description: 'A social technology company building connections through social media and virtual reality',
       jobCount: 24,
-      industry: 'Social Media/Technology'
+      industry: 'Social Media/Technology',
+      path: '/employers'
     },
     { 
       name: 'Netflix', 
       logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Logonetflix.png',
       description: 'A global streaming entertainment service offering movies, TV shows, and original content',
       jobCount: 18,
-      industry: 'Entertainment/Technology'
+      industry: 'Entertainment/Technology',
+      path: '/employers'
     },
     { 
       name: 'IBM', 
       logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg',
       description: 'A leading technology and consulting company specializing in AI, cloud, and quantum computing',
       jobCount: 34,
-      industry: 'Technology/Consulting'
+      industry: 'Technology/Consulting',
+      path: '/employers'
     },
     { 
       name: 'Oracle', 
       logo: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg',
       description: 'A multinational computer technology corporation specializing in database software and cloud systems',
       jobCount: 26,
-      industry: 'Enterprise Software'
+      industry: 'Enterprise Software',
+      path: '/employers'
     }
   ];
 
@@ -79,18 +88,20 @@ const CompaniesSection = () => {
           {companies.map((company, index) => (
             <HoverCard key={index}>
               <HoverCardTrigger asChild>
-                <div 
-                  className="flex flex-col items-center justify-center p-4 rounded-lg hover:bg-white hover:shadow-md transition-all duration-300 cursor-pointer"
-                >
-                  <div className="h-16 w-40 flex items-center justify-center mb-3 grayscale hover:grayscale-0 transition-all duration-300">
-                    <img
-                      src={company.logo}
-                      alt={`${company.name} logo`}
-                      className="h-10 object-contain"
-                    />
+                <Link to={company.path}>
+                  <div 
+                    className="flex flex-col items-center justify-center p-4 rounded-lg hover:bg-white hover:shadow-md transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="h-16 w-40 flex items-center justify-center mb-3 grayscale hover:grayscale-0 transition-all duration-300">
+                      <img
+                        src={company.logo}
+                        alt={`${company.name} logo`}
+                        className="h-10 object-contain"
+                      />
+                    </div>
+                    <p className="font-medium text-gray-800">{company.name}</p>
                   </div>
-                  <p className="font-medium text-gray-800">{company.name}</p>
-                </div>
+                </Link>
               </HoverCardTrigger>
               <HoverCardContent className="w-80">
                 <div className="flex flex-col space-y-2">
@@ -107,9 +118,11 @@ const CompaniesSection = () => {
                   <div className="bg-gray-50 p-2 rounded mt-2">
                     <p className="text-sm font-medium text-primary">{company.jobCount} open positions</p>
                   </div>
-                  <Button variant="outline" size="sm" className="mt-2 w-full">
-                    View Company Profile
-                  </Button>
+                  <Link to={company.path}>
+                    <Button variant="outline" size="sm" className="mt-2 w-full">
+                      View Company Profile
+                    </Button>
+                  </Link>
                 </div>
               </HoverCardContent>
             </HoverCard>
@@ -121,12 +134,16 @@ const CompaniesSection = () => {
             Join over 10,000 companies posting jobs on our platform
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-primary-gradient">
-              Post a Job
-            </Button>
-            <Button variant="outline">
-              Browse All Companies
-            </Button>
+            <Link to="/employers">
+              <Button className="bg-primary-gradient">
+                Post a Job
+              </Button>
+            </Link>
+            <Link to="/employers">
+              <Button variant="outline">
+                Browse All Companies
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

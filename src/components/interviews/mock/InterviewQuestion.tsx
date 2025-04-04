@@ -13,8 +13,11 @@ import {
   Brain,
   ThumbsUp,
   ThumbsDown,
-  Clock
+  Clock,
+  Mic,
+  MessageSquare
 } from 'lucide-react';
+import VoiceRecordingInterface from './VoiceRecordingInterface';
 
 interface InterviewQuestionProps {
   currentQuestionIndex: number;
@@ -25,6 +28,8 @@ interface InterviewQuestionProps {
   timer: number;
   isTimerRunning: boolean;
   isAnswering: boolean;
+  isVoiceMode: boolean;
+  isRecording: boolean;
   userAnswer: string;
   showFeedback: boolean;
   feedback: string;
@@ -34,6 +39,9 @@ interface InterviewQuestionProps {
   onMoveToNextQuestion: () => void;
   onSkipQuestion: () => void;
   onEndInterview: () => void;
+  onToggleVoiceMode: () => void;
+  onAudioRecorded: (audioBlob: Blob) => void;
+  onRecordingStateChange: (isRecording: boolean) => void;
 }
 
 const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
@@ -45,6 +53,8 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   timer,
   isTimerRunning,
   isAnswering,
+  isVoiceMode,
+  isRecording,
   userAnswer,
   showFeedback,
   feedback,
@@ -53,7 +63,10 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   onSubmitAnswer,
   onMoveToNextQuestion,
   onSkipQuestion,
-  onEndInterview
+  onEndInterview,
+  onToggleVoiceMode,
+  onAudioRecorded,
+  onRecordingStateChange
 }) => {
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -70,9 +83,29 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
           </span>
           <h2 className="text-xl font-semibold">{selectedRole} - {selectedDifficulty}</h2>
         </div>
-        <div className="flex items-center text-gray-500">
-          <Clock size={16} className="mr-1" />
-          <span>{formatTimer(timer)}</span>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onToggleVoiceMode}
+            className="flex items-center gap-1"
+          >
+            {isVoiceMode ? (
+              <>
+                <MessageSquare size={14} />
+                Text Mode
+              </>
+            ) : (
+              <>
+                <Mic size={14} />
+                Voice Mode
+              </>
+            )}
+          </Button>
+          <div className="flex items-center text-gray-500">
+            <Clock size={16} className="mr-1" />
+            <span>{formatTimer(timer)}</span>
+          </div>
         </div>
       </div>
       
@@ -87,14 +120,29 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
       )}
       
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">Your Answer</label>
-        <Textarea 
-          placeholder="Type your answer here..." 
-          className="min-h-[150px]"
-          value={userAnswer}
-          onChange={onUserAnswerChange}
-          disabled={!isAnswering || showFeedback}
-        />
+        {isVoiceMode ? (
+          <div className="space-y-3">
+            <h3 className="block text-sm font-medium mb-2">Your Voice Response</h3>
+            {isAnswering && (
+              <VoiceRecordingInterface 
+                onAudioRecorded={onAudioRecorded}
+                onRecordingStateChange={onRecordingStateChange}
+                isDisabled={!isAnswering || showFeedback}
+              />
+            )}
+          </div>
+        ) : (
+          <>
+            <label className="block text-sm font-medium mb-2">Your Answer</label>
+            <Textarea 
+              placeholder="Type your answer here..." 
+              className="min-h-[150px]"
+              value={userAnswer}
+              onChange={onUserAnswerChange}
+              disabled={!isAnswering || showFeedback}
+            />
+          </>
+        )}
       </div>
       
       {showFeedback && (
@@ -122,12 +170,12 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
           {!isAnswering && !showFeedback ? (
             <Button onClick={onStartAnswering}>
               <Play className="mr-2" size={16} />
-              Start Answering
+              Start {isVoiceMode ? 'Recording' : 'Answering'}
             </Button>
           ) : !showFeedback ? (
             <Button onClick={onSubmitAnswer} className="bg-primary-gradient">
               <CheckCircle2 className="mr-2" size={16} />
-              Submit Answer
+              Submit {isVoiceMode ? 'Recording' : 'Answer'}
             </Button>
           ) : (
             <Button onClick={onMoveToNextQuestion} className="bg-primary-gradient">

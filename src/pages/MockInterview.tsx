@@ -8,7 +8,9 @@ import InterviewQuestion from '@/components/interviews/mock/InterviewQuestion';
 import InterviewProgress from '@/components/interviews/mock/InterviewProgress';
 import InterviewHistoryComponent from '@/components/interviews/mock/InterviewHistory';
 import InterviewTips from '@/components/interviews/mock/InterviewTips';
+import InterviewFeedback from '@/components/interviews/mock/InterviewFeedback';
 import { useMockInterview } from '@/components/interviews/mock/useMockInterview';
+import { Brain, ThumbsUp, Award, Star } from 'lucide-react';
 
 const MockInterview = () => {
   const {
@@ -16,6 +18,9 @@ const MockInterview = () => {
     questions,
     setSelectedRole,
     setSelectedDifficulty,
+    toggleVoiceMode,
+    handleRecordingStateChange,
+    handleAudioRecorded,
     startInterview,
     startAnswering,
     handleUserAnswerChange,
@@ -23,6 +28,7 @@ const MockInterview = () => {
     moveToNextQuestion,
     skipQuestion,
     endInterview,
+    finishWithFeedback,
     switchToInterviewTab
   } = useMockInterview();
   
@@ -52,6 +58,38 @@ const MockInterview = () => {
                   onDifficultyChange={setSelectedDifficulty}
                   onStartInterview={startInterview}
                 />
+              ) : state.interviewScore ? (
+                <InterviewFeedback
+                  overallScore={state.interviewScore.overallScore}
+                  feedbackItems={[
+                    {
+                      category: 'Technical Knowledge',
+                      score: state.interviewScore.technicalKnowledge,
+                      feedback: 'You demonstrated good understanding of technical concepts',
+                      icon: <Brain className="text-blue-500" size={18} />
+                    },
+                    {
+                      category: 'Communication Skills',
+                      score: state.interviewScore.communicationSkills,
+                      feedback: 'Your explanations were clear and structured',
+                      icon: <ThumbsUp className="text-green-500" size={18} />
+                    },
+                    {
+                      category: 'Problem Solving',
+                      score: state.interviewScore.problemSolving,
+                      feedback: 'You showed methodical approach to solving problems',
+                      icon: <Award className="text-purple-500" size={18} />
+                    },
+                    {
+                      category: 'Culture Fit',
+                      score: state.interviewScore.cultureFit,
+                      feedback: 'You demonstrated alignment with company values',
+                      icon: <Star className="text-yellow-500" size={18} />
+                    }
+                  ]}
+                  detailedFeedback={state.interviewFeedback || ''}
+                  onFinish={finishWithFeedback}
+                />
               ) : (
                 <div className="space-y-6">
                   <InterviewQuestion
@@ -63,6 +101,8 @@ const MockInterview = () => {
                     timer={state.timer}
                     isTimerRunning={state.isTimerRunning}
                     isAnswering={state.isAnswering}
+                    isVoiceMode={state.isVoiceMode}
+                    isRecording={state.isRecording}
                     userAnswer={state.userAnswer}
                     showFeedback={state.showFeedback}
                     feedback={state.feedback}
@@ -72,6 +112,9 @@ const MockInterview = () => {
                     onMoveToNextQuestion={moveToNextQuestion}
                     onSkipQuestion={skipQuestion}
                     onEndInterview={endInterview}
+                    onToggleVoiceMode={toggleVoiceMode}
+                    onAudioRecorded={handleAudioRecorded}
+                    onRecordingStateChange={handleRecordingStateChange}
                   />
                   
                   <InterviewProgress

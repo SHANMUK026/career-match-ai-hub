@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { X, Send, User } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Send, X, ChevronRight } from 'lucide-react';
 import { ChatMessage } from '../mock/mockInterviewTypes';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ChatSidebarProps {
   isChatOpen: boolean;
@@ -13,106 +14,104 @@ interface ChatSidebarProps {
   onSendMessage: (text: string) => void;
 }
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ 
-  isChatOpen, 
-  onClose, 
-  messages, 
-  onSendMessage 
+const ChatSidebar: React.FC<ChatSidebarProps> = ({
+  isChatOpen,
+  onClose,
+  messages,
+  onSendMessage
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Auto-scroll to bottom when new messages arrive
+  const [newMessage, setNewMessage] = useState<string>('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Scroll to bottom of chat when new messages arrive
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollElement) {
-        scrollElement.scrollTop = scrollElement.scrollHeight;
-      }
+    if (isChatOpen && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
-
-  // Focus on input when chat is opened
-  useEffect(() => {
-    if (isChatOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isChatOpen]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  }, [messages, isChatOpen]);
+  
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      onSendMessage(inputValue);
-      setInputValue('');
+    if (newMessage.trim()) {
+      onSendMessage(newMessage);
+      setNewMessage('');
     }
   };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
+  
   if (!isChatOpen) return null;
   
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-lg flex flex-col border-l z-10">
+    <div className="fixed inset-y-0 right-0 w-full sm:w-80 md:w-96 bg-white shadow-xl flex flex-col z-40 transition-all duration-300 ease-in-out">
       <div className="p-4 border-b flex justify-between items-center">
-        <h3 className="font-medium">Interview Chat</h3>
+        <h3 className="font-semibold text-lg">Interview Chat</h3>
         <Button 
           variant="ghost" 
-          size="sm" 
-          onClick={onClose}
+          size="icon" 
+          onClick={onClose} 
+          className="hover:bg-gray-100 rounded-full h-8 w-8"
         >
-          <X className="h-4 w-4" />
+          <X size={18} />
         </Button>
       </div>
       
-      <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-        {messages.length === 0 ? (
-          <div className="text-gray-500 text-center p-4">
-            No messages yet. Start the conversation!
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div 
-                key={message.id}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`max-w-[80%] rounded-lg p-3 ${
-                    message.sender === 'user' 
-                      ? 'bg-primary text-white rounded-br-none' 
-                      : 'bg-gray-100 rounded-bl-none'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    {message.sender === 'interviewer' && (
-                      <span className="text-xs font-medium">Sarah Johnson</span>
-                    )}
-                    {message.sender === 'user' && (
-                      <span className="text-xs font-medium">You</span>
-                    )}
-                    <span className="text-xs opacity-70">{formatTime(message.timestamp)}</span>
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-4">
+          {messages.map((message) => (
+            <div 
+              key={message.id} 
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`flex items-start max-w-[80%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <Avatar className="h-8 w-8 mx-2 mt-1">
+                  {message.sender === 'user' ? (
+                    <AvatarFallback className="bg-primary text-white">
+                      Y
+                    </AvatarFallback>
+                  ) : (
+                    <AvatarImage src="https://ui-avatars.com/api/?name=Interviewer&background=4f46e5&color=fff" />
+                  )}
+                </Avatar>
+                <div>
+                  <div 
+                    className={`py-2 px-3 rounded-lg ${
+                      message.sender === 'user' 
+                        ? 'bg-primary text-white rounded-tr-none' 
+                        : 'bg-gray-100 rounded-tl-none'
+                    }`}
+                  >
+                    <p className="text-sm">{message.text}</p>
                   </div>
-                  <p className="text-sm">{message.text}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formatDistanceToNow(message.timestamp, { addSuffix: true })}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </ScrollArea>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
       
-      <form onSubmit={handleSubmit} className="p-3 border-t flex gap-2">
-        <Input
-          ref={inputRef}
-          placeholder="Type a message..."
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          className="flex-1"
+      <form onSubmit={handleSendMessage} className="p-3 border-t flex items-end">
+        <Textarea
+          placeholder="Type your message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          className="min-h-[60px] resize-none flex-1 mr-2"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSendMessage(e);
+            }
+          }}
         />
-        <Button type="submit" size="sm" className="bg-primary">
-          <Send className="h-4 w-4" />
+        <Button 
+          type="submit" 
+          size="icon" 
+          className="bg-primary-gradient h-10 w-10"
+          disabled={!newMessage.trim()}
+        >
+          <Send size={18} />
         </Button>
       </form>
     </div>

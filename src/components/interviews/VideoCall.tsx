@@ -17,12 +17,12 @@ const VideoCall: React.FC<VideoCallProps> = ({
   onEnd 
 }) => {
   const [
-    { isMuted, isVideoOff, isConnecting, elapsedTime, isChatOpen, isScreenSharing },
-    { toggleMute, toggleVideo, toggleScreenShare, toggleChat, endCall }
+    { isMuted, isVideoOff, isConnecting, elapsedTime, isChatOpen, isScreenSharing, chatMessages },
+    { toggleMute, toggleVideo, toggleScreenShare, toggleChat, endCall, sendChatMessage }
   ] = useVideoCall(onEnd);
   
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
       <VideoDisplay 
         isConnecting={isConnecting}
         isVideoOff={isVideoOff}
@@ -46,6 +46,8 @@ const VideoCall: React.FC<VideoCallProps> = ({
       <ChatSidebar 
         isChatOpen={isChatOpen}
         onClose={toggleChat}
+        messages={chatMessages}
+        onSendMessage={sendChatMessage}
       />
     </div>
   );

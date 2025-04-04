@@ -6,6 +6,13 @@ export interface InterviewHistory {
   questions: number;
 }
 
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'interviewer';
+  text: string;
+  timestamp: Date;
+}
+
 export interface InterviewState {
   selectedRole: string;
   selectedDifficulty: string;

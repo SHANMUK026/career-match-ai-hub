@@ -1,44 +1,57 @@
 
 import React from 'react';
 import { User, CheckCircle, ArrowRight, PartyPopper } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { 
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader
+} from '@/components/ui/card';
 
 const HowItWorksSection = () => {
+  const navigate = useNavigate();
+  
   const steps = [
     {
       title: 'Create Your Profile',
       description: 'Build your professional profile with skills, experience, and preferences.',
       icon: <User className="w-10 h-10 text-primary" />,
       animation: 'fade-in',
-      path: '/signup'
+      path: '/signup',
+      color: 'bg-blue-50'
     },
     {
       title: 'Take AI Assessments',
       description: 'Complete skill-based assessments to verify your expertise and highlight strengths.',
       icon: <CheckCircle className="w-10 h-10 text-primary" />,
       animation: 'fade-in delay-100',
-      path: '/assessments'
+      path: '/assessments',
+      color: 'bg-green-50'
     },
     {
       title: 'Get Matched to Jobs',
       description: 'Our AI algorithms match you with the most suitable job opportunities.',
       icon: <ArrowRight className="w-10 h-10 text-primary" />,
       animation: 'slide-in-right delay-200',
-      path: '/jobs'
+      path: '/jobs',
+      color: 'bg-purple-50'
     },
     {
       title: 'Get Hired & Start Working!',
       description: 'Interview, receive offers, and begin your new career journey.',
       icon: <PartyPopper className="w-10 h-10 text-primary" />,
       animation: 'fade-in delay-300',
-      path: '/mock-interview'
+      path: '/mock-interview',
+      color: 'bg-amber-50'
     }
   ];
 
   const handleStepClick = (path: string, title: string) => {
-    toast.info(`Navigating to ${title}`);
+    navigate(path);
+    toast.success(`Navigating to ${title}`);
   };
 
   return (
@@ -53,35 +66,39 @@ const HowItWorksSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <Link 
-              to={step.path} 
+            <Card 
               key={index} 
-              className="block transform transition-all duration-300 hover:translate-y-[-5px]"
+              className="overflow-hidden transform transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl"
               onClick={() => handleStepClick(step.path, step.title)}
             >
-              <div 
-                className="bg-white rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300 h-full border border-gray-100"
-              >
-                <div className="mb-4 flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center">
-                    {step.icon}
-                  </div>
+              <CardHeader className={`${step.color} pt-8 pb-4 flex flex-col items-center`}>
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm">
+                  {step.icon}
                 </div>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white flex items-center justify-center text-lg font-bold">
+                  {index + 1}
+                </div>
+              </CardHeader>
+              
+              <CardContent className="pt-6">
                 <h3 className="text-xl font-bold mb-3 text-center">{step.title}</h3>
                 <p className="text-gray-600 text-center">{step.description}</p>
-                <div className="mt-4 flex justify-center">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white flex items-center justify-center text-lg font-bold">
-                    {index + 1}
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-center">
-                  <Button variant="ghost" className="text-primary hover:text-primary-dark flex items-center group">
-                    Learn More
-                    <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-              </div>
-            </Link>
+              </CardContent>
+              
+              <CardFooter className="flex justify-center pb-4">
+                <Button 
+                  variant="ghost" 
+                  className="text-primary hover:text-primary-dark flex items-center group"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStepClick(step.path, step.title);
+                  }}
+                >
+                  Learn More
+                  <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       </div>

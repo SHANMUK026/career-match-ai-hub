@@ -11,6 +11,16 @@ export interface VideoCallState {
   isChatOpen: boolean;
   isScreenSharing: boolean;
   chatMessages: ChatMessage[];
+  availableDevices: {
+    audioinput: MediaDeviceInfo[];
+    videoinput: MediaDeviceInfo[];
+    audiooutput: MediaDeviceInfo[];
+  };
+  selectedDevices: {
+    audioinput?: string;
+    videoinput?: string;
+    audiooutput?: string;
+  };
 }
 
 export interface VideoCallActions {
@@ -20,7 +30,14 @@ export interface VideoCallActions {
   toggleChat: () => void;
   endCall: () => void;
   sendChatMessage: (text: string) => void;
+  changeDevice: (kind: 'audioinput' | 'videoinput' | 'audiooutput', deviceId: string) => void;
 }
+
+const defaultDevices = {
+  audioinput: [],
+  videoinput: [],
+  audiooutput: []
+};
 
 export const useVideoCall = (onEnd?: () => void): [VideoCallState, VideoCallActions] => {
   const [state, setState] = useState<VideoCallState>({
@@ -30,8 +47,62 @@ export const useVideoCall = (onEnd?: () => void): [VideoCallState, VideoCallActi
     elapsedTime: 0,
     isChatOpen: false,
     isScreenSharing: false,
-    chatMessages: []
+    chatMessages: [],
+    availableDevices: defaultDevices,
+    selectedDevices: {}
   });
+  
+  // Enumerate available devices when the component mounts
+  useEffect(() => {
+    const getAvailableDevices = async () => {
+      try {
+        // Request permissions first
+        await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        
+        const groupedDevices = devices.reduce((acc, device) => {
+          if (device.kind in acc) {
+            acc[device.kind as keyof typeof defaultDevices].push(device);
+          }
+          return acc;
+        }, {
+          audioinput: [] as MediaDeviceInfo[],
+          videoinput: [] as MediaDeviceInfo[],
+          audiooutput: [] as MediaDeviceInfo[]
+        });
+        
+        // Get default devices
+        const defaultAudioInput = groupedDevices.audioinput.find(d => d.deviceId === 'default') || groupedDevices.audioinput[0];
+        const defaultVideoInput = groupedDevices.videoinput.find(d => d.deviceId === 'default') || groupedDevices.videoinput[0];
+        const defaultAudioOutput = groupedDevices.audiooutput.find(d => d.deviceId === 'default') || groupedDevices.audiooutput[0];
+        
+        setState(prev => ({
+          ...prev,
+          availableDevices: groupedDevices,
+          selectedDevices: {
+            audioinput: defaultAudioInput?.deviceId,
+            videoinput: defaultVideoInput?.deviceId,
+            audiooutput: defaultAudioOutput?.deviceId
+          }
+        }));
+        
+        toast.success('Camera and microphone access granted');
+      } catch (error) {
+        console.error('Error accessing media devices:', error);
+        toast.error('Failed to access camera or microphone. Please check your permissions.');
+      }
+    };
+    
+    getAvailableDevices();
+    
+    // Listen for device changes
+    navigator.mediaDevices.addEventListener('devicechange', getAvailableDevices);
+    
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', getAvailableDevices);
+    };
+  }, []);
   
   // Simulate connection delay
   useEffect(() => {
@@ -85,9 +156,32 @@ export const useVideoCall = (onEnd?: () => void): [VideoCallState, VideoCallActi
   
   const toggleScreenShare = () => {
     setState(prev => {
-      const newIsScreenSharing = !prev.isScreenSharing;
-      toast.info(newIsScreenSharing ? 'Started screen sharing' : 'Stopped screen sharing');
-      return { ...prev, isScreenSharing: newIsScreenSharing };
+      const currentlySharing = prev.isScreenSharing;
+      
+      if (!currentlySharing) {
+        // Request screen sharing
+        navigator.mediaDevices.getDisplayMedia({ video: true })
+          .then(() => {
+            setState(prevState => ({
+              ...prevState,
+              isScreenSharing: true
+            }));
+            toast.success('Screen sharing started');
+          })
+          .catch(error => {
+            console.error('Error starting screen share:', error);
+            toast.error('Failed to start screen sharing');
+          });
+      } else {
+        // Stop screen sharing (in a real implementation, we would track and stop the track)
+        setState(prevState => ({
+          ...prevState,
+          isScreenSharing: false
+        }));
+        toast.info('Screen sharing stopped');
+      }
+      
+      return prev; // Return unchanged state, we'll update it in the promises
     });
   };
   
@@ -144,8 +238,20 @@ export const useVideoCall = (onEnd?: () => void): [VideoCallState, VideoCallActi
     }, 1000);
   };
   
+  const changeDevice = (kind: 'audioinput' | 'videoinput' | 'audiooutput', deviceId: string) => {
+    setState(prev => ({
+      ...prev,
+      selectedDevices: {
+        ...prev.selectedDevices,
+        [kind]: deviceId
+      }
+    }));
+    
+    toast.success(`Changed ${kind === 'audioinput' ? 'microphone' : kind === 'videoinput' ? 'camera' : 'speaker'}`);
+  };
+  
   return [
     state,
-    { toggleMute, toggleVideo, toggleScreenShare, toggleChat, endCall, sendChatMessage }
+    { toggleMute, toggleVideo, toggleScreenShare, toggleChat, endCall, sendChatMessage, changeDevice }
   ];
 };

@@ -2,8 +2,19 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
+  const handleFindJobs = () => {
+    navigate('/jobs');
+  };
+
+  const handleHireTalent = () => {
+    navigate('/employers');
+  };
+
   return (
     <section className="bg-hero-gradient min-h-screen flex items-center pt-16 overflow-hidden">
       <div className="container mx-auto px-4 py-20">
@@ -17,11 +28,18 @@ const HeroSection = () => {
               AI-driven job matching and assessments for the perfect career fit. Find opportunities that truly align with your skills and goals.
             </p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <Button className="btn-primary flex items-center justify-center group">
+              <Button 
+                className="btn-primary flex items-center justify-center group"
+                onClick={handleFindJobs}
+              >
                 Find Jobs
                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
               </Button>
-              <Button variant="outline" className="btn-secondary">
+              <Button 
+                variant="outline" 
+                className="btn-secondary"
+                onClick={handleHireTalent}
+              >
                 Hire Talent
               </Button>
             </div>

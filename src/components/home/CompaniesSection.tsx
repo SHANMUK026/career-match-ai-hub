@@ -2,9 +2,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const CompaniesSection = () => {
+  const navigate = useNavigate();
   const companies = [
     { 
       name: 'Microsoft', 
@@ -16,7 +18,7 @@ const CompaniesSection = () => {
     },
     { 
       name: 'Google', 
-      logo: '/lovable-uploads/3b7d6424-2c60-485b-a417-d419cbeffaa5.png',
+      logo: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       description: 'A global technology leader focused on search, cloud computing, and online advertising',
       jobCount: 38,
       industry: 'Technology',
@@ -63,14 +65,29 @@ const CompaniesSection = () => {
       path: '/employers'
     },
     { 
-      name: 'Oracle', 
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg',
-      description: 'A multinational computer technology corporation specializing in database software and cloud systems',
+      name: 'Tesla', 
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png',
+      description: 'An electric vehicle and clean energy company revolutionizing transportation',
       jobCount: 26,
-      industry: 'Enterprise Software',
+      industry: 'Automotive/Energy',
       path: '/employers'
     }
   ];
+
+  const handleCompanyClick = (company: typeof companies[0]) => {
+    navigate(`/employers?company=${company.name}`);
+    toast.success(`Viewing ${company.name} profile`);
+  };
+
+  const handlePostJob = () => {
+    navigate('/employers?action=post-job');
+    toast.success('Navigating to Post a Job page');
+  };
+
+  const handleBrowseCompanies = () => {
+    navigate('/employers');
+    toast.success('Browsing all companies');
+  };
 
   return (
     <section className="py-16 bg-gradient-to-b from-white to-gray-50">
@@ -88,26 +105,39 @@ const CompaniesSection = () => {
           {companies.map((company, index) => (
             <HoverCard key={index}>
               <HoverCardTrigger asChild>
-                <Link to={company.path}>
-                  <div 
-                    className="flex flex-col items-center justify-center p-4 rounded-lg hover:bg-white hover:shadow-md transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="h-16 w-40 flex items-center justify-center mb-3 grayscale hover:grayscale-0 transition-all duration-300">
-                      <img
-                        src={company.logo}
-                        alt={`${company.name} logo`}
-                        className="h-10 object-contain"
-                      />
-                    </div>
-                    <p className="font-medium text-gray-800">{company.name}</p>
+                <div 
+                  className="flex flex-col items-center justify-center p-4 rounded-lg hover:bg-white hover:shadow-md transition-all duration-300 cursor-pointer"
+                  onClick={() => handleCompanyClick(company)}
+                >
+                  <div className="h-16 w-40 flex items-center justify-center mb-3 grayscale hover:grayscale-0 transition-all duration-300">
+                    <img
+                      src={company.logo}
+                      alt={`${company.name} logo`}
+                      className="h-10 object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null;
+                        target.src = `https://via.placeholder.com/150?text=${company.name}`;
+                      }}
+                    />
                   </div>
-                </Link>
+                  <p className="font-medium text-gray-800">{company.name}</p>
+                </div>
               </HoverCardTrigger>
               <HoverCardContent className="w-80">
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 flex items-center justify-center">
-                      <img src={company.logo} alt={company.name} className="max-h-full" />
+                      <img 
+                        src={company.logo} 
+                        alt={company.name} 
+                        className="max-h-full" 
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = `https://via.placeholder.com/150?text=${company.name}`;
+                        }}
+                      />
                     </div>
                     <div>
                       <h4 className="font-semibold">{company.name}</h4>
@@ -118,11 +148,14 @@ const CompaniesSection = () => {
                   <div className="bg-gray-50 p-2 rounded mt-2">
                     <p className="text-sm font-medium text-primary">{company.jobCount} open positions</p>
                   </div>
-                  <Link to={company.path}>
-                    <Button variant="outline" size="sm" className="mt-2 w-full">
-                      View Company Profile
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2 w-full"
+                    onClick={() => handleCompanyClick(company)}
+                  >
+                    View Company Profile
+                  </Button>
                 </div>
               </HoverCardContent>
             </HoverCard>
@@ -134,16 +167,18 @@ const CompaniesSection = () => {
             Join over 10,000 companies posting jobs on our platform
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/employers">
-              <Button className="bg-primary-gradient">
-                Post a Job
-              </Button>
-            </Link>
-            <Link to="/employers">
-              <Button variant="outline">
-                Browse All Companies
-              </Button>
-            </Link>
+            <Button 
+              className="bg-primary-gradient"
+              onClick={handlePostJob}
+            >
+              Post a Job
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={handleBrowseCompanies}
+            >
+              Browse All Companies
+            </Button>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const CompaniesSection = () => {
@@ -80,7 +80,7 @@ const CompaniesSection = () => {
   };
 
   const handlePostJob = () => {
-    navigate('/employers?action=post-job');
+    navigate('/jobs/post');
     toast.success('Navigating to Post a Job page');
   };
 

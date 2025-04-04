@@ -50,8 +50,10 @@ const App = () => {
             {/* Public job routes */}
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/jobs/post" element={<JobApplicationPage />} />
             <Route path="/job-application/:id" element={<JobApplicationPage />} />
             <Route path="/employers" element={<Employers />} />
+            <Route path="/employers/profile" element={<Employers />} />
             
             {/* Protected routes - only accessible after login */}
             <Route 

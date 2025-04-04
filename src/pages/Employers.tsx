@@ -5,13 +5,14 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Search, BriefcaseBusiness, MapPin, Star, Users, ChevronRight, Building } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Employers = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const navigate = useNavigate();
   
-  // Sample employers data with improved logos and more information
+  // Enhanced employers data with more industry variety
   const employers = [
     {
       id: 1,
@@ -96,6 +97,106 @@ const Employers = () => {
       employees: '100,000+',
       logo: '/lovable-uploads/e0ced664-b053-4289-a65e-70ad432c63dd.png',
       color: 'bg-green-50'
+    },
+    // Finance companies
+    {
+      id: 8,
+      name: 'JPMorgan Chase',
+      industry: 'Finance',
+      location: 'New York, NY',
+      description: 'Global leader in financial services offering solutions to the world\'s most important corporations and governments',
+      openPositions: 12,
+      rating: 4.2,
+      employees: '250,000+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/JPMorgan_Chase_Logo_2008.svg/1200px-JPMorgan_Chase_Logo_2008.svg.png',
+      color: 'bg-blue-50'
+    },
+    {
+      id: 9,
+      name: 'Goldman Sachs',
+      industry: 'Finance',
+      location: 'New York, NY',
+      description: 'Leading global investment banking, securities and investment management firm',
+      openPositions: 9,
+      rating: 4.4,
+      employees: '40,000+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Goldman_Sachs.svg/1200px-Goldman_Sachs.svg.png',
+      color: 'bg-gray-50'
+    },
+    // Healthcare companies
+    {
+      id: 10,
+      name: 'Johnson & Johnson',
+      industry: 'Healthcare',
+      location: 'New Brunswick, NJ',
+      description: 'Global leader in healthcare products, pharmaceuticals and medical devices',
+      openPositions: 15,
+      rating: 4.5,
+      employees: '130,000+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Johnson_and_Johnson_logo.svg/2560px-Johnson_and_Johnson_logo.svg.png',
+      color: 'bg-red-50'
+    },
+    {
+      id: 11,
+      name: 'Pfizer',
+      industry: 'Healthcare',
+      location: 'New York, NY',
+      description: 'Global pharmaceutical corporation that discovers, develops, and provides medicines and vaccines',
+      openPositions: 11,
+      rating: 4.3,
+      employees: '78,000+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Pfizer_logo.svg/2560px-Pfizer_logo.svg.png',
+      color: 'bg-blue-50'
+    },
+    // Remote-first companies
+    {
+      id: 12,
+      name: 'Gitlab',
+      industry: 'Remote',
+      location: 'Remote (Global)',
+      description: 'DevOps platform delivered as a single application with a remote-first workforce',
+      openPositions: 18,
+      rating: 4.7,
+      employees: '1,500+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/GitLab_logo.svg/1200px-GitLab_logo.svg.png',
+      color: 'bg-orange-50'
+    },
+    {
+      id: 13,
+      name: 'Automattic',
+      industry: 'Remote',
+      location: 'Remote (Global)',
+      description: 'Web development company behind WordPress.com with a fully distributed workforce',
+      openPositions: 8,
+      rating: 4.6,
+      employees: '1,800+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Automattic_logo.svg/1200px-Automattic_logo.svg.png',
+      color: 'bg-indigo-50'
+    },
+    // Startups
+    {
+      id: 14,
+      name: 'Notion',
+      industry: 'Startup',
+      location: 'San Francisco, CA',
+      description: 'All-in-one workspace for notes, tasks, wikis, and databases',
+      openPositions: 6,
+      rating: 4.8,
+      employees: '400+',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',
+      color: 'bg-gray-50'
+    },
+    {
+      id: 15,
+      name: 'Vercel',
+      industry: 'Startup',
+      location: 'San Francisco, CA',
+      description: 'Platform for frontend developers, providing speed and reliability for websites and applications',
+      openPositions: 7,
+      rating: 4.7,
+      employees: '350+',
+      logo: 'https://assets.vercel.com/image/upload/v1607554385/repositories/vercel/logo.png',
+      color: 'bg-black text-white'
     }
   ];
 
@@ -106,12 +207,19 @@ const Employers = () => {
   };
 
   const handleViewJobs = (companyName: string) => {
+    navigate(`/jobs?company=${companyName}`);
     toast.success(`Viewing jobs at ${companyName}`);
   };
 
   const handleViewCompanyProfile = (companyName: string) => {
+    navigate(`/employers/profile?company=${companyName}`);
     toast.success(`Viewing ${companyName}'s company profile`);
   };
+
+  // Filter the employers based on the active filter
+  const filteredEmployers = activeFilter === 'all' 
+    ? employers 
+    : employers.filter(employer => employer.industry.toLowerCase().includes(activeFilter.toLowerCase()));
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -184,10 +292,10 @@ const Employers = () => {
           
           {/* Main content */}
           <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6">Top Hiring Companies</h2>
+            <h2 className="text-2xl font-semibold mb-6">{filteredEmployers.length} Companies Found</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {employers.map(employer => (
+              {filteredEmployers.map(employer => (
                 <Card key={employer.id} className="overflow-hidden hover:shadow-lg transition-all">
                   <div className={`p-6 ${employer.color}`}>
                     <div className="flex items-center mb-4">
@@ -261,16 +369,12 @@ const Employers = () => {
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Find Your Perfect Candidates?</h2>
               <p className="mb-6 text-white/80">Post a job today and get matched with qualified candidates through our AI-driven platform.</p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Link to="/jobs">
-                  <Button className="bg-white text-primary hover:bg-gray-100 transition-colors">
-                    Post a Job
-                  </Button>
-                </Link>
-                <Link to="/assessments">
-                  <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                    Learn About Our Process
-                  </Button>
-                </Link>
+                <Button className="bg-white text-primary hover:bg-gray-100 transition-colors" onClick={() => navigate('/jobs/post')}>
+                  Post a Job
+                </Button>
+                <Button variant="outline" className="border-white text-white hover:bg-white/10" onClick={() => navigate('/assessments')}>
+                  Learn About Our Process
+                </Button>
               </div>
             </div>
           </div>

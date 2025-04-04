@@ -5,39 +5,70 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Bell, Search, User, Calendar, BarChart4, FileText, Settings, Home } from 'lucide-react';
 import ProfileOverview from '@/components/dashboard/ProfileOverview';
 import JobRecommendations from '@/components/dashboard/JobRecommendations';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* Sidebar */}
         <div className="w-64 bg-secondary text-white h-screen fixed shadow-lg hidden md:block">
           <div className="p-4 border-b border-white/10">
-            <h2 className="text-xl font-poppins font-bold">CareerMatchAI</h2>
+            <Link to="/" className="text-xl font-poppins font-bold">CareerMatchAI</Link>
           </div>
           <div className="p-4">
             <div className="space-y-1">
-              <Button variant="ghost" className="w-full justify-start text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white hover:bg-white/10"
+                onClick={() => handleNavigate('/dashboard')}
+              >
                 <Home className="mr-2 h-5 w-5" />
                 Dashboard
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => handleNavigate('/jobs')}
+              >
                 <FileText className="mr-2 h-5 w-5" />
                 Applications
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => handleNavigate('/jobs')}
+              >
                 <BarChart4 className="mr-2 h-5 w-5" />
                 AI Job Matches
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => handleNavigate('/mock-interview')}
+              >
                 <Calendar className="mr-2 h-5 w-5" />
                 Interviews
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => handleNavigate('/dashboard')}
+              >
                 <User className="mr-2 h-5 w-5" />
                 Profile
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => handleNavigate('/dashboard')}
+              >
                 <Settings className="mr-2 h-5 w-5" />
                 Settings
               </Button>
@@ -86,7 +117,7 @@ const Dashboard = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <Card>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('/jobs')}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -99,7 +130,7 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('/mock-interview')}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -112,7 +143,7 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('/jobs')}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -125,7 +156,7 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('/dashboard')}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>

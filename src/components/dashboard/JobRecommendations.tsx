@@ -3,44 +3,60 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Briefcase, MapPin, DollarSign, BarChart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const recommendedJobs = [
   {
     id: 1,
     title: 'Senior Frontend Developer',
-    company: 'TechNova',
-    location: 'San Francisco, CA',
-    salary: '$130k - $160k',
+    company: 'Google',
+    location: 'Mountain View, CA',
+    salary: '$140k - $180k',
     matchScore: 98,
-    logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png',
+    logo: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
   },
   {
     id: 2,
     title: 'React Team Lead',
-    company: 'InnovateTech',
+    company: 'Microsoft',
     location: 'Remote',
     salary: '$140k - $170k',
     matchScore: 95,
-    logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png',
+    logo: 'https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31',
   },
   {
     id: 3,
     title: 'Full Stack Developer',
-    company: 'EnterpriseAI',
-    location: 'Austin, TX',
-    salary: '$120k - $150k',
+    company: 'Amazon',
+    location: 'Seattle, WA',
+    salary: '$130k - $160k',
     matchScore: 92,
-    logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/2560px-Amazon_logo.svg.png',
   },
 ];
 
 const JobRecommendations = () => {
+  const navigate = useNavigate();
+  
+  const handleViewAll = () => {
+    navigate('/jobs');
+  };
+  
+  const handleApply = (jobId: number) => {
+    navigate(`/job-application/${jobId}`);
+  };
+  
+  const handleSave = (jobId: number) => {
+    // Implementation for saving job would go here
+    console.log(`Job ${jobId} saved`);
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">AI Job Recommendations</CardTitle>
-          <Button variant="ghost" className="text-sm text-primary" size="sm">
+          <Button variant="ghost" className="text-sm text-primary" size="sm" onClick={handleViewAll}>
             View All
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -51,8 +67,8 @@ const JobRecommendations = () => {
           {recommendedJobs.map((job) => (
             <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
               <div className="flex items-start">
-                <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 mr-4 bg-gray-100 flex items-center justify-center">
-                  <img src={job.logo} alt={job.company} className="w-8 h-8 object-contain" />
+                <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 mr-4 bg-gray-100 flex items-center justify-center">
+                  <img src={job.logo} alt={job.company} className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between items-start mb-2">
@@ -78,10 +94,18 @@ const JobRecommendations = () => {
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button size="sm" className="bg-primary-gradient text-white">
+                    <Button 
+                      size="sm" 
+                      className="bg-primary-gradient text-white"
+                      onClick={() => handleApply(job.id)}
+                    >
                       Apply Now
                     </Button>
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleSave(job.id)}
+                    >
                       Save
                     </Button>
                   </div>

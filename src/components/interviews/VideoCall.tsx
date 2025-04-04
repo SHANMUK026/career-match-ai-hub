@@ -13,7 +13,8 @@ import {
   Users, 
   MoreVertical, 
   Share2,
-  MonitorUp
+  MonitorUp,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 

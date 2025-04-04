@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,8 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Play, Pause, SkipForward, ArrowRight, CheckCircle2, FileQuestion, Clock } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { Play, Pause, SkipForward, ArrowRight, CheckCircle2, FileQuestion, Clock, Brain, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 const jobRoles = [
@@ -51,7 +53,24 @@ const sampleQuestions = {
   ]
 };
 
+// Sample feedback responses
+const sampleFeedback = {
+  "positive": [
+    "Great answer! You effectively demonstrated your knowledge.",
+    "Well articulated response with clear examples.",
+    "You addressed all key aspects of the question competently.",
+    "Strong technical explanation that shows your expertise."
+  ],
+  "negative": [
+    "Consider providing more specific examples in your answer.",
+    "Try to be more concise while covering the key points.",
+    "Make sure to address all parts of the question completely.",
+    "Consider structuring your answer with a clear beginning and conclusion."
+  ]
+};
+
 const MockInterview = () => {
+  const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
   const [interviewStarted, setInterviewStarted] = useState<boolean>(false);
@@ -60,6 +79,16 @@ const MockInterview = () => {
   const [isAnswering, setIsAnswering] = useState<boolean>(false);
   const [userAnswer, setUserAnswer] = useState<string>("");
   const [completedQuestions, setCompletedQuestions] = useState<number[]>([]);
+  const [showFeedback, setShowFeedback] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<string>("");
+  const [interviewHistory, setInterviewHistory] = useState<
+    { date: string; role: string; score: number; questions: number }[]
+  >([
+    { date: "April 1, 2025", role: "Frontend Developer", score: 85, questions: 5 },
+    { date: "March 28, 2025", role: "Product Manager", score: 72, questions: 5 }
+  ]);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+  const [timerInterval, setTimerInterval] = useState<any>(null);
   
   // Get questions based on selected role
   const getQuestions = () => {
@@ -69,6 +98,35 @@ const MockInterview = () => {
   };
   
   const questions = getQuestions();
+  
+  useEffect(() => {
+    // Clear any existing interval when component unmounts
+    return () => {
+      if (timerInterval) clearInterval(timerInterval);
+    };
+  }, [timerInterval]);
+  
+  useEffect(() => {
+    if (isTimerRunning && timer > 0) {
+      const interval = setInterval(() => {
+        setTimer(prevTimer => {
+          if (prevTimer <= 1) {
+            clearInterval(interval);
+            setIsTimerRunning(false);
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+      
+      setTimerInterval(interval);
+      
+      return () => clearInterval(interval);
+    } else if (timer === 0 && isAnswering) {
+      toast.warning("Time's up! Please submit your answer now.");
+      setIsTimerRunning(false);
+    }
+  }, [isTimerRunning, timer, isAnswering]);
   
   const startInterview = () => {
     if (!selectedRole || !selectedDifficulty) {
@@ -81,13 +139,23 @@ const MockInterview = () => {
     setTimer(120);
     setIsAnswering(false);
     setCompletedQuestions([]);
+    setShowFeedback(false);
     toast.success("Interview started! Take your time to think before answering.");
   };
   
   const startAnswering = () => {
     setIsAnswering(true);
-    // In a real app, this would start a timer countdown
+    setIsTimerRunning(true);
     toast.info("Recording started. You have 2 minutes to answer.");
+  };
+  
+  const generateFeedback = () => {
+    // In a real app, this would use AI to analyze the answer
+    // For demo purposes, we'll randomly select feedback
+    const isPositive = Math.random() > 0.3; // 70% chance of positive feedback
+    const feedbackArr = isPositive ? sampleFeedback.positive : sampleFeedback.negative;
+    const randomIndex = Math.floor(Math.random() * feedbackArr.length);
+    return feedbackArr[randomIndex];
   };
   
   const submitAnswer = () => {
@@ -96,16 +164,37 @@ const MockInterview = () => {
       return;
     }
     
+    setIsTimerRunning(false);
+    if (timerInterval) clearInterval(timerInterval);
+    
+    const generatedFeedback = generateFeedback();
+    setFeedback(generatedFeedback);
+    setShowFeedback(true);
+    
     setCompletedQuestions([...completedQuestions, currentQuestionIndex]);
+  };
+  
+  const moveToNextQuestion = () => {
     setUserAnswer("");
+    setShowFeedback(false);
     setIsAnswering(false);
+    setTimer(120);
     
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      toast.success("Answer submitted! Moving to next question.");
+      toast.success("Moving to next question.");
     } else {
-      toast.success("Interview completed! Check your feedback.");
-      // In a real app, this would generate AI feedback
+      // Interview completed
+      const newHistory = {
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        role: selectedRole,
+        score: Math.floor(65 + Math.random() * 30), // Random score between 65-95
+        questions: questions.length
+      };
+      
+      setInterviewHistory([newHistory, ...interviewHistory]);
+      toast.success("Interview completed! Check your feedback in the History tab.");
+      setInterviewStarted(false);
     }
   };
   
@@ -114,6 +203,8 @@ const MockInterview = () => {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setIsAnswering(false);
       setUserAnswer("");
+      setShowFeedback(false);
+      setTimer(120);
       toast.info("Question skipped");
     } else {
       toast.info("This is the last question");
@@ -181,7 +272,10 @@ const MockInterview = () => {
                     </div>
                   </div>
                   
-                  <div className="flex justify-end">
+                  <div className="flex justify-between">
+                    <Button variant="outline" onClick={() => navigate('/smart-interview')}>
+                      Try Smart Interview
+                    </Button>
                     <Button className="bg-primary-gradient" onClick={startInterview}>
                       Start Interview
                       <ArrowRight className="ml-2" size={16} />
@@ -208,6 +302,12 @@ const MockInterview = () => {
                       <p className="text-lg">{questions[currentQuestionIndex]}</p>
                     </div>
                     
+                    {isTimerRunning && (
+                      <div className="mb-4">
+                        <Progress value={(timer / 120) * 100} className="h-2" />
+                      </div>
+                    )}
+                    
                     <div className="mb-4">
                       <label className="block text-sm font-medium mb-2">Your Answer</label>
                       <Textarea 
@@ -215,28 +315,55 @@ const MockInterview = () => {
                         className="min-h-[150px]"
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
-                        disabled={!isAnswering}
+                        disabled={!isAnswering || showFeedback}
                       />
                     </div>
                     
+                    {showFeedback && (
+                      <div className="mb-4 bg-gray-50 p-4 rounded-lg border">
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <Brain className="mr-2 text-primary" size={18} />
+                          AI Feedback
+                        </h3>
+                        <p className="text-gray-700">{feedback}</p>
+                        <div className="flex justify-end mt-3 space-x-2">
+                          <Button variant="outline" size="sm" className="text-green-600">
+                            <ThumbsUp size={14} className="mr-1" />
+                            Helpful
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-red-600">
+                            <ThumbsDown size={14} className="mr-1" />
+                            Not Helpful
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="flex justify-between">
                       <div className="space-x-2">
-                        {!isAnswering ? (
+                        {!isAnswering && !showFeedback ? (
                           <Button onClick={startAnswering}>
                             <Play className="mr-2" size={16} />
                             Start Answering
                           </Button>
-                        ) : (
+                        ) : !showFeedback ? (
                           <Button onClick={submitAnswer} className="bg-primary-gradient">
                             <CheckCircle2 className="mr-2" size={16} />
                             Submit Answer
                           </Button>
+                        ) : (
+                          <Button onClick={moveToNextQuestion} className="bg-primary-gradient">
+                            <ArrowRight className="mr-2" size={16} />
+                            {currentQuestionIndex < questions.length - 1 ? "Next Question" : "Complete Interview"}
+                          </Button>
                         )}
                         
-                        <Button variant="outline" onClick={skipQuestion}>
-                          <SkipForward className="mr-2" size={16} />
-                          Skip Question
-                        </Button>
+                        {!showFeedback && (
+                          <Button variant="outline" onClick={skipQuestion}>
+                            <SkipForward className="mr-2" size={16} />
+                            Skip Question
+                          </Button>
+                        )}
                       </div>
                       
                       <Button variant="destructive" onClick={() => setInterviewStarted(false)}>
@@ -252,7 +379,7 @@ const MockInterview = () => {
                         <div 
                           key={index}
                           className={`h-2 rounded-full ${
-                            index === currentQuestionIndex 
+                            index === currentQuestionIndex && !showFeedback
                               ? 'bg-primary animate-pulse' 
                               : completedQuestions.includes(index)
                                 ? 'bg-green-500'
@@ -269,13 +396,38 @@ const MockInterview = () => {
             <TabsContent value="history">
               <Card className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Your Interview History</h2>
-                <div className="text-center py-8">
-                  <FileQuestion size={48} className="mx-auto text-gray-400 mb-3" />
-                  <p className="text-gray-500">You haven't completed any interviews yet</p>
-                  <Button className="mt-4" onClick={() => document.querySelector('[value="interview"]')?.dispatchEvent(new Event('click'))}>
-                    Start Your First Interview
-                  </Button>
-                </div>
+                
+                {interviewHistory.length === 0 ? (
+                  <div className="text-center py-8">
+                    <FileQuestion size={48} className="mx-auto text-gray-400 mb-3" />
+                    <p className="text-gray-500">You haven't completed any interviews yet</p>
+                    <Button className="mt-4" onClick={() => document.querySelector('[value="interview"]')?.dispatchEvent(new Event('click'))}>
+                      Start Your First Interview
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {interviewHistory.map((interview, index) => (
+                      <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="font-medium">{interview.role}</h3>
+                            <p className="text-sm text-gray-500">{interview.date}</p>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-primary">Score: {interview.score}%</div>
+                            <p className="text-sm text-gray-500">{interview.questions} questions</p>
+                          </div>
+                        </div>
+                        <div className="mt-2 flex justify-end">
+                          <Button variant="link" size="sm" className="text-primary">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </Card>
             </TabsContent>
             

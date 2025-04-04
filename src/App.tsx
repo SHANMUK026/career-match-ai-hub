@@ -22,98 +22,102 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Payment from "./pages/Payment";
 import NotFound from "./pages/NotFound";
+import { useState } from "react";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
+const App = () => {
+  // Move the QueryClient creation inside the component
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        retry: 1,
+      },
     },
-  },
-});
+  }));
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner position="top-right" closeButton />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/contact" element={<Contact />} />
-          
-          {/* Public job routes */}
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/jobs/:id" element={<JobDetail />} />
-          <Route path="/job-application/:id" element={<JobApplicationPage />} />
-          <Route path="/employers" element={<Employers />} />
-          
-          {/* Protected routes - only accessible after login */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/assessments" 
-            element={
-              <ProtectedRoute>
-                <Assessments />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/mock-interview" 
-            element={
-              <ProtectedRoute>
-                <MockInterview />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/smart-interview" 
-            element={
-              <ProtectedRoute>
-                <SmartMockInterview />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/video-interview/:id" 
-            element={
-              <ProtectedRoute>
-                <VideoInterview />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/candidate-review" 
-            element={
-              <ProtectedRoute>
-                <CandidateReview />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/payment" 
-            element={
-              <ProtectedRoute>
-                <Payment />
-              </ProtectedRoute>
-            } 
-          />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <AIChatbot />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-right" closeButton />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/contact" element={<Contact />} />
+            
+            {/* Public job routes */}
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/job-application/:id" element={<JobApplicationPage />} />
+            <Route path="/employers" element={<Employers />} />
+            
+            {/* Protected routes - only accessible after login */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/assessments" 
+              element={
+                <ProtectedRoute>
+                  <Assessments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/mock-interview" 
+              element={
+                <ProtectedRoute>
+                  <MockInterview />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/smart-interview" 
+              element={
+                <ProtectedRoute>
+                  <SmartMockInterview />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/video-interview/:id" 
+              element={
+                <ProtectedRoute>
+                  <VideoInterview />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/candidate-review" 
+              element={
+                <ProtectedRoute>
+                  <CandidateReview />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/payment" 
+              element={
+                <ProtectedRoute>
+                  <Payment />
+                </ProtectedRoute>
+              } 
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <AIChatbot />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

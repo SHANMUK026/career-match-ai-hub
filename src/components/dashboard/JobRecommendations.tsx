@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Briefcase, MapPin, DollarSign, BarChart } from 'lucide-react';
+import { ArrowRight, Briefcase, MapPin, DollarSign, BarChart, BookmarkPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -14,7 +14,7 @@ const recommendedJobs = [
     location: 'Mountain View, CA',
     salary: '$140k - $180k',
     matchScore: 98,
-    logo: '/lovable-uploads/3b7d6424-2c60-485b-a417-d419cbeffaa5.png',
+    logo: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
   },
   {
     id: 2,
@@ -37,11 +37,11 @@ const recommendedJobs = [
   {
     id: 4,
     title: 'AI/ML Engineer',
-    company: 'Meta',
-    location: 'Menlo Park, CA',
+    company: 'Tesla',
+    location: 'Austin, TX',
     salary: '$150k - $190k',
     matchScore: 90,
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/1200px-Meta_Platforms_Inc._logo.svg.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/2560px-Tesla_Motors.svg.png',
   },
 ];
 
@@ -63,11 +63,11 @@ const JobRecommendations = () => {
   };
 
   return (
-    <Card className="shadow-md overflow-visible">
+    <Card className="shadow-md overflow-hidden">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">AI Job Recommendations</CardTitle>
-          <Button variant="ghost" className="text-sm text-primary" size="sm" onClick={handleViewAll}>
+          <Button variant="ghost" className="text-sm text-primary flex items-center" size="sm" onClick={handleViewAll}>
             View All
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -78,15 +78,15 @@ const JobRecommendations = () => {
           {recommendedJobs.map((job) => (
             <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
               <div className="flex items-start">
-                <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 mr-4 bg-gray-100 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 mr-4 bg-gray-50 flex items-center justify-center p-1">
                   <img 
                     src={job.logo} 
-                    alt={job.company} 
-                    className="w-full h-full object-contain p-1" 
+                    alt={`${job.company} logo`}
+                    className="w-full h-full object-contain" 
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.onerror = null;
-                      target.src = "https://via.placeholder.com/150?text=" + job.company;
+                      target.src = `https://ui-avatars.com/api/?name=${job.company}&background=random&color=fff`;
                     }}
                   />
                 </div>
@@ -116,7 +116,7 @@ const JobRecommendations = () => {
                   <div className="flex space-x-2">
                     <Button 
                       size="sm" 
-                      className="bg-primary-gradient text-white"
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg transition-shadow"
                       onClick={() => handleApply(job.id)}
                     >
                       Apply Now
@@ -125,7 +125,9 @@ const JobRecommendations = () => {
                       size="sm" 
                       variant="outline"
                       onClick={() => handleSave(job.id)}
+                      className="flex items-center"
                     >
+                      <BookmarkPlus className="mr-1 h-4 w-4" />
                       Save
                     </Button>
                   </div>

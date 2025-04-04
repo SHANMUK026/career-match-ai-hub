@@ -3,10 +3,10 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FileQuestion } from 'lucide-react';
-import { InterviewHistory } from './mockInterviewTypes';
+import { InterviewHistoryItem } from './mockInterviewTypes';
 
 interface InterviewHistoryProps {
-  interviewHistory: InterviewHistory[];
+  interviewHistory: InterviewHistoryItem[];
   onStartNewInterview: () => void;
 }
 
@@ -33,11 +33,11 @@ const InterviewHistoryComponent: React.FC<InterviewHistoryProps> = ({
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">{interview.role}</h3>
-                  <p className="text-sm text-gray-500">{interview.date}</p>
+                  <p className="text-sm text-gray-500">{interview.date.toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
                   <div className="font-medium text-primary">Score: {interview.score}%</div>
-                  <p className="text-sm text-gray-500">{interview.questions} questions</p>
+                  <p className="text-sm text-gray-500">{interview.questionsAnswered} of {interview.totalQuestions} questions</p>
                 </div>
               </div>
               <div className="mt-2 flex justify-end">

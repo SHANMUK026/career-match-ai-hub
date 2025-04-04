@@ -1,3 +1,4 @@
+
 export const jobRoles = [
   { id: "1", title: "Frontend Developer" },
   { id: "2", title: "Backend Developer" },
@@ -37,6 +38,13 @@ export const sampleQuestions = {
     "Explain the concept of overfitting and how to prevent it.",
     "What evaluation metrics would you use for a classification problem?"
   ]
+};
+
+// Add the getQuestions function that was missing
+export const getQuestions = (role: string) => {
+  return role && sampleQuestions[role as keyof typeof sampleQuestions]
+    ? sampleQuestions[role as keyof typeof sampleQuestions]
+    : ["Please select a job role to see questions"];
 };
 
 // Sample feedback responses

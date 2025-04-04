@@ -9,9 +9,13 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
 import JobDetail from "./pages/JobDetail";
+import JobApplicationPage from "./pages/JobApplicationPage";
 import Employers from "./pages/Employers";
 import Assessments from "./pages/Assessments";
 import MockInterview from "./pages/MockInterview";
+import SmartMockInterview from "./pages/SmartMockInterview";
+import VideoInterview from "./pages/VideoInterview";
+import CandidateReview from "./pages/CandidateReview";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -35,6 +39,7 @@ const App = () => (
           {/* Public job routes */}
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetail />} />
+          <Route path="/job-application/:id" element={<JobApplicationPage />} />
           <Route path="/employers" element={<Employers />} />
           
           {/* Protected routes - only accessible after login */}
@@ -59,6 +64,30 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <MockInterview />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/smart-interview" 
+            element={
+              <ProtectedRoute>
+                <SmartMockInterview />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/video-interview/:id" 
+            element={
+              <ProtectedRoute>
+                <VideoInterview />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/candidate-review" 
+            element={
+              <ProtectedRoute>
+                <CandidateReview />
               </ProtectedRoute>
             } 
           />

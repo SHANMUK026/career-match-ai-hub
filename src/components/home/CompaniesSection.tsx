@@ -3,12 +3,12 @@ import React from 'react';
 
 const CompaniesSection = () => {
   const companies = [
-    { name: 'Microsoft', logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png' },
-    { name: 'Google', logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png' },
-    { name: 'Apple', logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png' },
-    { name: 'Amazon', logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png' },
-    { name: 'Facebook', logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png' },
-    { name: 'Netflix', logo: 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png' },
+    { name: 'Microsoft', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg' },
+    { name: 'Google', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' },
+    { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' },
+    { name: 'Amazon', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' },
+    { name: 'Meta', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg' },
+    { name: 'Netflix', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Logonetflix.png' },
   ];
 
   return (

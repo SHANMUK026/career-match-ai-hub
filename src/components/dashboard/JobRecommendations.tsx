@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Briefcase, MapPin, DollarSign, BarChart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const recommendedJobs = [
   {
@@ -13,7 +14,7 @@ const recommendedJobs = [
     location: 'Mountain View, CA',
     salary: '$140k - $180k',
     matchScore: 98,
-    logo: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
+    logo: '/lovable-uploads/31ce572b-2495-4b45-b3be-98807cf283d8.png',
   },
   {
     id: 2,
@@ -33,6 +34,15 @@ const recommendedJobs = [
     matchScore: 92,
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/2560px-Amazon_logo.svg.png',
   },
+  {
+    id: 4,
+    title: 'AI/ML Engineer',
+    company: 'Meta',
+    location: 'Menlo Park, CA',
+    salary: '$150k - $190k',
+    matchScore: 90,
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/1200px-Meta_Platforms_Inc._logo.svg.png',
+  },
 ];
 
 const JobRecommendations = () => {
@@ -44,15 +54,15 @@ const JobRecommendations = () => {
   
   const handleApply = (jobId: number) => {
     navigate(`/job-application/${jobId}`);
+    toast.success("Application started!");
   };
   
   const handleSave = (jobId: number) => {
-    // Implementation for saving job would go here
-    console.log(`Job ${jobId} saved`);
+    toast.success(`Job ${jobId} saved to your favorites`);
   };
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md overflow-visible">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">AI Job Recommendations</CardTitle>
@@ -62,7 +72,7 @@ const JobRecommendations = () => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-y-auto max-h-[600px] pr-1">
         <div className="space-y-4">
           {recommendedJobs.map((job) => (
             <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">

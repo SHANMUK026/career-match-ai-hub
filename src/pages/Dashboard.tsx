@@ -6,6 +6,7 @@ import { Bell, Search, User, Calendar, BarChart4, FileText, Settings, Home } fro
 import ProfileOverview from '@/components/dashboard/ProfileOverview';
 import JobRecommendations from '@/components/dashboard/JobRecommendations';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -59,7 +60,10 @@ const Dashboard = () => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
-                onClick={() => handleNavigate('/dashboard')}
+                onClick={() => {
+                  handleNavigate('/dashboard');
+                  toast.info("Profile section is coming soon");
+                }}
               >
                 <User className="mr-2 h-5 w-5" />
                 Profile
@@ -67,7 +71,10 @@ const Dashboard = () => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
-                onClick={() => handleNavigate('/dashboard')}
+                onClick={() => {
+                  handleNavigate('/dashboard');
+                  toast.info("Settings section is coming soon");
+                }}
               >
                 <Settings className="mr-2 h-5 w-5" />
                 Settings
@@ -97,7 +104,8 @@ const Dashboard = () => {
                   <Bell className="h-5 w-5" />
                   <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                 </Button>
-                <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden">
+                <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden cursor-pointer"
+                     onClick={() => toast.info("Profile section is coming soon")}>
                   <img 
                     src="https://randomuser.me/api/portraits/men/32.jpg" 
                     alt="Profile" 
@@ -109,7 +117,7 @@ const Dashboard = () => {
           </header>
 
           {/* Dashboard Content */}
-          <main className="p-4 md:p-6">
+          <main className="p-4 md:p-6 overflow-auto">
             <div className="mb-8">
               <h1 className="text-2xl md:text-3xl font-bold mb-2">Welcome back, Thomas!</h1>
               <p className="text-gray-600">Here's what's happening with your job search today.</p>
@@ -156,7 +164,8 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('/dashboard')}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" 
+                onClick={() => toast.info("Profile section is coming soon")}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>

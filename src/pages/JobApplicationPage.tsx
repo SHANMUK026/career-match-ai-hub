@@ -60,8 +60,8 @@ const JobApplicationPage = () => {
         <Header />
         <main className="flex-grow pt-24 container mx-auto px-4">
           <div className="text-center py-16">
-            <h1 className="text-2xl font-bold mb-4">Job Not Found</h1>
-            <p className="mb-6">The job you're looking for doesn't exist or has been removed.</p>
+            <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Job Not Found</h1>
+            <p className="mb-6 text-gray-800 dark:text-gray-200">The job you're looking for doesn't exist or has been removed.</p>
             <Button onClick={() => navigate('/jobs')}>
               <ArrowLeft className="mr-2" size={18} />
               Back to Jobs
@@ -76,11 +76,11 @@ const JobApplicationPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow pt-24 pb-12">
+      <main className="flex-grow pt-24 pb-12 bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4">
           <Button 
             variant="ghost" 
-            className="mb-6"
+            className="mb-6 text-primary hover:text-primary/80 hover:bg-primary/10"
             onClick={() => navigate(`/jobs/${id}`)}
           >
             <ArrowLeft className="mr-2" size={18} />
@@ -91,7 +91,7 @@ const JobApplicationPage = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
               Apply for {job.title} at {job.company}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-800 dark:text-gray-200">
               Complete the application form below to apply for this position.
             </p>
           </div>
@@ -102,89 +102,89 @@ const JobApplicationPage = () => {
             </div>
             
             <div className="space-y-6">
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-3">Job Summary</h2>
+              <Card className="p-6 shadow-md border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Job Summary</h2>
                 <div className="border-l-4 border-primary pl-4 py-2 mb-4">
-                  <h3 className="font-bold text-xl">{job.title}</h3>
-                  <p className="text-gray-700">{job.company}</p>
+                  <h3 className="font-bold text-xl text-gray-900 dark:text-white">{job.title}</h3>
+                  <p className="text-gray-800 dark:text-gray-200">{job.company}</p>
                 </div>
                 
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center">
-                    <MapPin className="h-4 w-4 text-gray-500 mr-2" />
-                    <span>{job.location}</span>
+                    <MapPin className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-gray-800 dark:text-gray-200">{job.location}</span>
                   </div>
                   <div className="flex items-center">
-                    <BriefcaseBusiness className="h-4 w-4 text-gray-500 mr-2" />
-                    <span>{job.type}</span>
+                    <BriefcaseBusiness className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-gray-800 dark:text-gray-200">{job.type}</span>
                   </div>
                   <div className="flex items-center">
-                    <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
-                    <span>{job.salary}</span>
+                    <DollarSign className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-gray-800 dark:text-gray-200">{job.salary}</span>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 text-gray-500 mr-2" />
-                    <span>Posted {job.posted}</span>
+                    <Clock className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-gray-800 dark:text-gray-200">Posted {job.posted}</span>
                   </div>
                 </div>
               </Card>
               
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Required Documents</h2>
+              <Card className="p-6 shadow-md border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Required Documents</h2>
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <CheckCircle className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Resume/CV (PDF format, max 5MB)</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Resume/CV (PDF format, max 5MB)</p>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <CheckCircle className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Cover letter (optional but recommended)</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Cover letter (optional but recommended)</p>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <CheckCircle className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Professional references (optional)</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Professional references (optional)</p>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <CheckCircle className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Portfolio links (if applicable)</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Portfolio links (if applicable)</p>
                   </li>
                 </ul>
               </Card>
               
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Application Tips</h2>
+              <Card className="p-6 shadow-md border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Application Tips</h2>
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <BookOpen className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Tailor your resume to highlight relevant experience for this position</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Tailor your resume to highlight relevant experience for this position</p>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <BookOpen className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Use specific examples from your past work that demonstrate required skills</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Use specific examples from your past work that demonstrate required skills</p>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <BookOpen className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Keep your cover letter concise and focused on why you're a good fit</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Keep your cover letter concise and focused on why you're a good fit</p>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
                       <BookOpen className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm">Research {job.company} before applying to understand their values and culture</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200">Research {job.company} before applying to understand their values and culture</p>
                   </li>
                 </ul>
               </Card>

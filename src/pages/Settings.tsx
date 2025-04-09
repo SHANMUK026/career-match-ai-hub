@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Lock, Bell, Shield, Palette, Trash2, Save, Upload } from 'lucide-react';
+import { User, Lock, Bell, Shield, Palette, Trash2, Save, Upload, AlertCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -20,11 +19,14 @@ import {
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Profile, UserData } from '@/types/profile';
+import { cn } from '@/lib/utils';
 
 const Settings = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [showNotification, setShowNotification] = useState(true);
   const [userData, setUserData] = useState<UserData>({
     firstName: '',
     lastName: '',
@@ -167,80 +169,101 @@ const Settings = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12">
-      <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
-        
-        <Tabs defaultValue="profile" className="w-full animate-fade-in">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-64">
-              <TabsList className="flex flex-col w-full rounded-md bg-white/80 backdrop-blur-sm shadow-md p-1 space-y-1">
-                <TabsTrigger 
-                  value="profile" 
-                  className="w-full justify-start py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <User className="mr-2 h-5 w-5" />
-                  Profile
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="account" 
-                  className="w-full justify-start py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <Lock className="mr-2 h-5 w-5" />
-                  Account Security
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="notifications" 
-                  className="w-full justify-start py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <Bell className="mr-2 h-5 w-5" />
-                  Notifications
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="privacy" 
-                  className="w-full justify-start py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <Shield className="mr-2 h-5 w-5" />
-                  Privacy
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="appearance" 
-                  className="w-full justify-start py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <Palette className="mr-2 h-5 w-5" />
-                  Appearance
-                </TabsTrigger>
-              </TabsList>
+  const NavItem = ({ id, label, icon, active }: { id: string; label: string; icon: React.ReactNode; active: boolean }) => (
+    <button
+      onClick={() => setActiveTab(id)}
+      className={cn(
+        "flex items-center gap-3 w-full px-5 py-4 text-left rounded-md transition-all",
+        active ? "bg-blue-600 text-white" : "hover:bg-gray-100"
+      )}
+    >
+      <div className="w-6 h-6 flex items-center justify-center">
+        {icon}
+      </div>
+      <span className={active ? "font-medium" : ""}>{label}</span>
+    </button>
+  );
 
-              <div className="mt-6">
-                <Card className="border border-red-200 bg-red-50 shadow-sm">
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col items-center text-center">
-                      <Trash2 className="h-8 w-8 text-red-500 mb-2" />
-                      <h3 className="font-semibold text-red-700">Delete Account</h3>
-                      <p className="text-sm text-red-600 mt-1 mb-3">This action is irreversible.</p>
-                      <Button 
-                        variant="destructive" 
-                        className="w-full"
-                        onClick={() => toast.error("Account deletion is currently disabled.")}
-                      >
-                        Delete Account
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+  const ThemeCard = ({ theme, label, current, onClick }: { theme: string; label: string; current: string; onClick: () => void }) => (
+    <div 
+      className={cn(
+        "border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-md",
+        current === theme ? "border-blue-500 ring-2 ring-blue-200" : "border-gray-200"
+      )}
+      onClick={onClick}
+    >
+      <div className={cn(
+        "h-20 w-full",
+        theme === 'light' ? "bg-white" : 
+        theme === 'dark' ? "bg-gray-900" : 
+        "bg-gradient-to-r from-white to-gray-900"
+      )}></div>
+      <div className="p-3 text-center">
+        <p className="font-medium">{label}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-6 md:py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="flex items-center mb-8">
+          <User className="text-gray-600 mr-3" />
+          <h1 className="text-3xl font-bold">Account Settings</h1>
+        </div>
+        
+        {showNotification && (
+          <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <AlertCircle className="text-blue-600 mr-3 flex-shrink-0" />
+              <p className="font-medium">Account deletion is currently disabled.</p>
+            </div>
+            <button onClick={() => setShowNotification(false)} className="text-gray-500 hover:text-gray-800">
+              <X size={18} />
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="md:w-64 bg-white rounded-xl shadow-sm">
+            <div className="p-3">
+              <NavItem id="profile" label="Profile" icon={<User size={18} />} active={activeTab === 'profile'} />
+              <NavItem id="account" label="Account Security" icon={<Lock size={18} />} active={activeTab === 'account'} />
+              <NavItem id="notifications" label="Notifications" icon={<Bell size={18} />} active={activeTab === 'notifications'} />
+              <NavItem id="privacy" label="Privacy" icon={<Shield size={18} />} active={activeTab === 'privacy'} />
+              <NavItem id="appearance" label="Appearance" icon={<Palette size={18} />} active={activeTab === 'appearance'} />
             </div>
             
-            <div className="flex-1 space-y-6">
+            <div className="border-t border-gray-100 mt-2 p-3">
+              <Card className="border border-red-100 bg-red-50">
+                <CardContent className="p-4">
+                  <div className="flex flex-col items-center text-center">
+                    <Trash2 className="h-6 w-6 text-red-500 mb-2" />
+                    <h3 className="font-semibold text-red-700">Delete Account</h3>
+                    <p className="text-xs text-red-600 mt-1 mb-3">This action is irreversible.</p>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      onClick={() => toast.error("Account deletion is currently disabled.")}
+                    >
+                      Delete Account
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          
+          <div className="flex-1 space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsContent value="profile" className="m-0">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                <Card className="border-0 shadow-sm bg-white">
                   <CardHeader>
                     <CardTitle>Profile Information</CardTitle>
                     <CardDescription>Update your personal information and how you appear on the platform.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    
                     <div className="flex flex-col items-center md:flex-row md:items-start gap-4">
                       <div className="flex flex-col items-center">
                         <Avatar className="w-24 h-24 border-2 border-gray-200 mb-4">
@@ -360,7 +383,7 @@ const Settings = () => {
                     
                     <div className="flex justify-end">
                       <Button 
-                        className="bg-primary-gradient hover:opacity-90 transition-all shadow-md hover:shadow-lg px-6"
+                        className="bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg px-6"
                         onClick={handleSaveProfile}
                         disabled={isSaving}
                       >
@@ -372,8 +395,56 @@ const Settings = () => {
                 </Card>
               </TabsContent>
               
+              
+              <TabsContent value="appearance" className="m-0">
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle>Appearance</CardTitle>
+                    <CardDescription>Customize how CareerMatchAI looks for you.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">Theme Preference</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <ThemeCard 
+                          theme="light" 
+                          label="Light"
+                          current={userData.theme} 
+                          onClick={() => handleSelectChange('theme', 'light')} 
+                        />
+                        <ThemeCard 
+                          theme="dark" 
+                          label="Dark"
+                          current={userData.theme} 
+                          onClick={() => handleSelectChange('theme', 'dark')} 
+                        />
+                        <ThemeCard 
+                          theme="system" 
+                          label="System"
+                          current={userData.theme} 
+                          onClick={() => handleSelectChange('theme', 'system')} 
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <Button 
+                        className="bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+                        onClick={handleSaveProfile}
+                        disabled={isSaving}
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        {isSaving ? 'Saving...' : 'Save Appearance'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              
               <TabsContent value="account" className="m-0">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                
+                <Card className="border-0 shadow-sm bg-white">
                   <CardHeader>
                     <CardTitle>Account Security</CardTitle>
                     <CardDescription>Manage your account security settings and password.</CardDescription>
@@ -437,7 +508,7 @@ const Settings = () => {
                     
                     <div className="flex justify-end">
                       <Button 
-                        className="bg-primary-gradient hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                        className="bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
                         onClick={() => toast.info("Password change functionality coming soon")}
                       >
                         Update Password
@@ -448,7 +519,8 @@ const Settings = () => {
               </TabsContent>
               
               <TabsContent value="notifications" className="m-0">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                
+                <Card className="border-0 shadow-sm bg-white">
                   <CardHeader>
                     <CardTitle>Notification Preferences</CardTitle>
                     <CardDescription>Control when and how you receive notifications.</CardDescription>
@@ -508,7 +580,7 @@ const Settings = () => {
                     
                     <div className="flex justify-end">
                       <Button 
-                        className="bg-primary-gradient hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                        className="bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
                         onClick={handleSaveProfile}
                         disabled={isSaving}
                       >
@@ -521,7 +593,8 @@ const Settings = () => {
               </TabsContent>
               
               <TabsContent value="privacy" className="m-0">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                
+                <Card className="border-0 shadow-sm bg-white">
                   <CardHeader>
                     <CardTitle>Privacy Settings</CardTitle>
                     <CardDescription>Control your profile visibility and data sharing preferences.</CardDescription>
@@ -601,7 +674,7 @@ const Settings = () => {
                     
                     <div className="flex justify-end">
                       <Button 
-                        className="bg-primary-gradient hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                        className="bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
                         onClick={() => toast.success("Privacy settings saved")}
                       >
                         Save Privacy Settings
@@ -610,65 +683,9 @@ const Settings = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
-              
-              <TabsContent value="appearance" className="m-0">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle>Appearance</CardTitle>
-                    <CardDescription>Customize how CareerMatchAI looks for you.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div>
-                      <h3 className="font-medium text-lg mb-4">Theme Preference</h3>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          <div 
-                            className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                              userData.theme === 'light' ? 'border-primary bg-blue-50 ring-2 ring-primary/20' : 'border-gray-200'
-                            }`}
-                            onClick={() => handleSelectChange('theme', 'light')}
-                          >
-                            <div className="h-20 bg-white rounded-md border border-gray-200 mb-2"></div>
-                            <p className="font-medium text-center">Light</p>
-                          </div>
-                          <div 
-                            className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                              userData.theme === 'dark' ? 'border-primary bg-blue-50 ring-2 ring-primary/20' : 'border-gray-200'
-                            }`}
-                            onClick={() => handleSelectChange('theme', 'dark')}
-                          >
-                            <div className="h-20 bg-gray-900 rounded-md border border-gray-700 mb-2"></div>
-                            <p className="font-medium text-center">Dark</p>
-                          </div>
-                          <div 
-                            className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                              userData.theme === 'system' ? 'border-primary bg-blue-50 ring-2 ring-primary/20' : 'border-gray-200'
-                            }`}
-                            onClick={() => handleSelectChange('theme', 'system')}
-                          >
-                            <div className="h-20 bg-gradient-to-r from-white to-gray-900 rounded-md border border-gray-200 mb-2"></div>
-                            <p className="font-medium text-center">System</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end">
-                      <Button 
-                        className="bg-primary-gradient hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-                        onClick={handleSaveProfile}
-                        disabled={isSaving}
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        {isSaving ? 'Saving...' : 'Save Appearance'}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </div>
+            </Tabs>
           </div>
-        </Tabs>
+        </div>
       </div>
     </div>
   );

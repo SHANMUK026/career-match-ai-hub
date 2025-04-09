@@ -66,7 +66,6 @@ const Settings = () => {
         }
         
         if (data) {
-          // Cast data to Profile type to properly handle optional fields
           const profile = data as unknown as Profile;
           
           setUserData({
@@ -85,7 +84,6 @@ const Settings = () => {
             theme: profile.theme || 'system',
           });
         } else {
-          // Set email from session if profile not found
           setUserData(prev => ({
             ...prev,
             email: session.user.email || '',

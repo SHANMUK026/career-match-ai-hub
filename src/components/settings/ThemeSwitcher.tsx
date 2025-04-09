@@ -18,7 +18,7 @@ export const ThemeCard = ({ theme, label, icon, current, onClick }: ThemeCardPro
   return (
     <motion.div 
       className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-        isActive ? "border-blue-500 ring-2 ring-blue-200" : "border-gray-200"
+        isActive ? "border-blue-500 ring-2 ring-blue-200" : "border-gray-200 dark:border-gray-700"
       }`}
       onClick={onClick}
       whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" }}

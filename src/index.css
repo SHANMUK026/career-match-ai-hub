@@ -153,4 +153,31 @@
   .link-enhanced {
     @apply text-blue-600 dark:text-blue-400 hover:underline;
   }
+  
+  /* AI Interview Specific Styles */
+  .ai-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600;
+  }
+  
+  .ai-avatar-glow {
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+  }
+  
+  .video-container {
+    @apply bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden relative;
+    aspect-ratio: 16/9;
+  }
+  
+  .video-controls {
+    @apply absolute bottom-4 left-4 right-4 flex items-center justify-center space-x-4 opacity-0 transition-opacity duration-300;
+  }
+  
+  .video-container:hover .video-controls {
+    @apply opacity-100;
+  }
+  
+  .control-button {
+    @apply rounded-full w-12 h-12 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 transition-colors;
+  }
 }
+

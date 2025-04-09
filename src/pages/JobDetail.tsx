@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -8,7 +7,6 @@ import { Card } from '@/components/ui/card';
 import { MapPin, BriefcaseBusiness, DollarSign, Clock, Building, ArrowLeft, User, BookOpen, FileBadge } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Mock job data - in a real app, this would come from a database
 const jobsData = [
   {
     id: "1",
@@ -166,7 +164,6 @@ const JobDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // Find the job based on the URL parameter
   const job = jobsData.find(job => job.id === id);
   
   if (!job) {
@@ -189,7 +186,7 @@ const JobDetail = () => {
   }
   
   const handleApply = () => {
-    toast.success("Application submitted successfully!");
+    navigate(`/job-application/${id}`);
   };
   
   const handleSaveJob = () => {
@@ -210,27 +207,26 @@ const JobDetail = () => {
             Back to Jobs
           </Button>
           
-          {/* Job Header */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="md:flex justify-between items-start">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-2 text-primary">{job.title}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2 text-primary">{job?.title}</h1>
                 <div className="flex items-center mb-4">
                   <Building className="mr-2 text-gray-600" size={18} />
-                  <span className="font-medium">{job.company}</span>
+                  <span className="font-medium">{job?.company}</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-y-2 gap-x-4 text-sm text-gray-600">
                   <div className="flex items-center">
                     <MapPin size={16} className="mr-1" />
-                    {job.location}
+                    {job?.location}
                   </div>
                   <div className="flex items-center">
                     <BriefcaseBusiness size={16} className="mr-1" />
-                    {job.type}
+                    {job?.type}
                   </div>
                   <div className="flex items-center">
                     <DollarSign size={16} className="mr-1" />
-                    {job.salary}
+                    {job?.salary}
                   </div>
                 </div>
               </div>
@@ -245,27 +241,26 @@ const JobDetail = () => {
             </div>
             <div className="mt-4 pt-4 border-t border-gray-200 flex items-center text-sm text-gray-500">
               <Clock size={16} className="mr-1" />
-              Posted {job.posted}
+              Posted {job?.posted}
             </div>
           </div>
           
-          {/* Job Details */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
             <div className="lg:col-span-2 space-y-6">
               <Card className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Job Description</h2>
-                <p className="text-gray-700 mb-6">{job.description}</p>
+                <p className="text-gray-700 mb-6">{job?.description}</p>
                 
                 <h3 className="text-lg font-semibold mb-3">Responsibilities</h3>
                 <ul className="list-disc pl-5 mb-6 space-y-2 text-gray-700">
-                  {job.responsibilities.map((item, index) => (
+                  {job?.responsibilities.map((item, index) => (
                     <li key={index}>{item}</li>
                   ))}
                 </ul>
                 
                 <h3 className="text-lg font-semibold mb-3">Requirements</h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                  {job.requirements.map((item, index) => (
+                  {job?.requirements.map((item, index) => (
                     <li key={index}>{item}</li>
                   ))}
                 </ul>
@@ -301,7 +296,7 @@ const JobDetail = () => {
             <div className="space-y-6">
               <Card className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Company Information</h2>
-                <p className="text-gray-700 mb-6">{job.companyInfo}</p>
+                <p className="text-gray-700 mb-6">{job?.companyInfo}</p>
                 <Button className="w-full" variant="outline" onClick={() => navigate(`/employers`)}>
                   View Company Profile
                 </Button>
@@ -334,7 +329,6 @@ const JobDetail = () => {
             </div>
           </div>
           
-          {/* Similar Jobs */}
           <div className="mb-12">
             <h2 className="text-xl font-semibold mb-6">Similar Jobs</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

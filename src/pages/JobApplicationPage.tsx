@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -12,7 +13,8 @@ import {
   Clock, 
   DollarSign, 
   BriefcaseBusiness,
-  BookOpen
+  BookOpen,
+  CheckCircle
 } from 'lucide-react';
 
 // Import job data from JobDetail
@@ -85,6 +87,15 @@ const JobApplicationPage = () => {
             Back to Job Details
           </Button>
           
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
+              Apply for {job.title} at {job.company}
+            </h1>
+            <p className="text-gray-600">
+              Complete the application form below to apply for this position.
+            </p>
+          </div>
+          
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <ResumeUpload jobId={job.id} jobTitle={job.title} />
@@ -116,6 +127,36 @@ const JobApplicationPage = () => {
                     <span>Posted {job.posted}</span>
                   </div>
                 </div>
+              </Card>
+              
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Required Documents</h2>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-sm">Resume/CV (PDF format, max 5MB)</p>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-sm">Cover letter (optional but recommended)</p>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-sm">Professional references (optional)</p>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-primary/10 rounded-full p-1 mr-3 mt-0.5">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-sm">Portfolio links (if applicable)</p>
+                  </li>
+                </ul>
               </Card>
               
               <Card className="p-6">

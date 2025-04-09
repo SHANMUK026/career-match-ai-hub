@@ -1,13 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Briefcase, SearchCheck, ChevronRight, Award, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-
-// Add framer-motion as a dependency
-<lov-add-dependency>framer-motion@latest</lov-add-dependency>
 
 const HeroSection = () => {
   const navigate = useNavigate();

@@ -19,12 +19,13 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Profile, UserData } from '@/types/profile';
 
 const Settings = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<UserData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -63,20 +64,23 @@ const Settings = () => {
         }
         
         if (data) {
+          // Cast data to Profile type to properly handle optional fields
+          const profile = data as unknown as Profile;
+          
           setUserData({
-            firstName: data.first_name || '',
-            lastName: data.last_name || '',
+            firstName: profile.first_name || '',
+            lastName: profile.last_name || '',
             email: session.user.email || '',
-            title: data.title || '',
-            location: data.location || '',
-            bio: data.bio || '',
-            experience: data.experience || '',
-            education: data.education || '',
-            notificationsEmail: data.notifications_email !== false,
-            notificationsApp: data.notifications_app !== false,
-            notificationsInterviews: data.notifications_interviews !== false,
-            notificationsJobs: data.notifications_jobs !== false,
-            theme: data.theme || 'system',
+            title: profile.title || '',
+            location: profile.location || '',
+            bio: profile.bio || '',
+            experience: profile.experience || '',
+            education: profile.education || '',
+            notificationsEmail: profile.notifications_email !== false,
+            notificationsApp: profile.notifications_app !== false,
+            notificationsInterviews: profile.notifications_interviews !== false,
+            notificationsJobs: profile.notifications_jobs !== false,
+            theme: profile.theme || 'system',
           });
         } else {
           // Set email from session if profile not found

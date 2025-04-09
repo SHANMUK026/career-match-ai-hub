@@ -17,6 +17,8 @@ import { SettingsSidebar } from '@/components/settings/SettingsSidebar';
 import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';
 import { useTheme } from '@/contexts/ThemeContext';
 import { InterviewAISettings } from '@/components/settings/InterviewAISettings';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -146,6 +148,10 @@ const Settings = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setUserData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSwitchChange = (field: keyof UserData, value: boolean) => {
+    setUserData(prev => ({ ...prev, [field]: value }));
   };
 
   if (isLoading) {

@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MapPin, BriefcaseBusiness, Clock, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface JobCardProps {
   id: number | string;
@@ -17,6 +18,14 @@ export interface JobCardProps {
 
 const JobCard = ({ id, title, company, location, type, salary, posted, description }: JobCardProps) => {
   const navigate = useNavigate();
+  
+  const handleApplyClick = () => {
+    if (!id) {
+      toast.error('Job information is incomplete. Please try again later.');
+      return;
+    }
+    navigate(`/job-application/${id}`);
+  };
   
   return (
     <div className="bg-white rounded-lg shadow p-5 hover:shadow-md transition-shadow duration-300">
@@ -52,7 +61,7 @@ const JobCard = ({ id, title, company, location, type, salary, posted, descripti
         </div>
         <Button 
           className="bg-primary-gradient transition-transform hover:scale-105"
-          onClick={() => navigate(`/job-application/${id}`)}
+          onClick={handleApplyClick}
         >
           Apply Now
         </Button>

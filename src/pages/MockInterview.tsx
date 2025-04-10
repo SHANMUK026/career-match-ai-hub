@@ -52,7 +52,7 @@ const MockInterview = () => {
           </p>
           
           {!apiKeyExists && (
-            <Alert variant="warning" className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+            <Alert variant="default" className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
               <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
               <div>
                 <h4 className="font-medium text-yellow-800 dark:text-yellow-300">AI Key Required</h4>

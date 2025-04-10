@@ -2,11 +2,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Home } from "lucide-react";
+import { Home, Search, ArrowLeft } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isJobRelated = location.pathname.includes('/job') || location.pathname.includes('/jobs');
 
   useEffect(() => {
     console.error(
@@ -19,27 +20,57 @@ const NotFound = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="text-center bg-white dark:bg-gray-800 p-10 rounded-xl shadow-lg max-w-md w-full">
         <h1 className="text-6xl font-bold mb-4 text-primary">404</h1>
-        <h2 className="text-2xl font-semibold mb-2">Page Not Found</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Sorry, the page you are looking for doesn't exist or has been moved.
-        </p>
-        <div className="space-y-4">
-          <Button 
-            className="bg-primary-gradient w-full" 
-            onClick={() => navigate('/')}
-            size="lg"
-          >
-            <Home className="mr-2" size={18} />
-            Return to Home
-          </Button>
-          <Button 
-            variant="outline" 
-            className="w-full" 
-            onClick={() => navigate(-1)}
-          >
-            Go Back
-          </Button>
-        </div>
+        
+        {isJobRelated ? (
+          <>
+            <h2 className="text-2xl font-semibold mb-2">Job Not Found</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
+              Sorry, the job you're looking for may have been filled or removed from our system.
+            </p>
+            <div className="space-y-4">
+              <Button 
+                className="bg-primary-gradient w-full" 
+                onClick={() => navigate('/jobs')}
+                size="lg"
+              >
+                <Search className="mr-2" size={18} />
+                Browse Available Jobs
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => navigate(-1)}
+              >
+                <ArrowLeft className="mr-2" size={18} />
+                Go Back
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl font-semibold mb-2">Page Not Found</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
+              Sorry, the page you are looking for doesn't exist or has been moved.
+            </p>
+            <div className="space-y-4">
+              <Button 
+                className="bg-primary-gradient w-full" 
+                onClick={() => navigate('/')}
+                size="lg"
+              >
+                <Home className="mr-2" size={18} />
+                Return to Home
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => navigate(-1)}
+              >
+                Go Back
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

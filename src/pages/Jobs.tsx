@@ -17,7 +17,7 @@ const Jobs = () => {
   // Sample job data - in a real app this would come from an API
   const jobs: JobCardProps[] = [
     {
-      id: 1,
+      id: "1",
       title: 'Senior Frontend Developer',
       company: 'TechCorp',
       location: 'San Francisco, CA',
@@ -27,7 +27,7 @@ const Jobs = () => {
       description: 'We are looking for an experienced Frontend Developer to join our team...'
     },
     {
-      id: 2,
+      id: "2",
       title: 'Product Manager',
       company: 'InnovateNow',
       location: 'Remote',
@@ -37,7 +37,7 @@ const Jobs = () => {
       description: 'Lead product development and work closely with engineering teams...'
     },
     {
-      id: 3,
+      id: "3",
       title: 'Data Scientist',
       company: 'Analytics Pro',
       location: 'New York, NY',
@@ -47,7 +47,7 @@ const Jobs = () => {
       description: 'Apply machine learning techniques to solve business problems...'
     },
     {
-      id: 4,
+      id: "4",
       title: 'UX/UI Designer',
       company: 'DesignHub',
       location: 'Austin, TX',
@@ -57,7 +57,7 @@ const Jobs = () => {
       description: 'Create beautiful, intuitive interfaces for our flagship products...'
     },
     {
-      id: 5,
+      id: "5",
       title: 'DevOps Engineer',
       company: 'CloudScale',
       location: 'Remote',
@@ -67,7 +67,7 @@ const Jobs = () => {
       description: 'Build and maintain our cloud infrastructure and CI/CD pipelines...'
     },
     {
-      id: 6,
+      id: "6",
       title: 'Marketing Specialist',
       company: 'GrowthGenius',
       location: 'Chicago, IL',

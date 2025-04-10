@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MapPin, BriefcaseBusiness, Clock, DollarSign } from 'lucide-react';
 
 export interface JobCardProps {
-  id: number;
+  id: number | string;
   title: string;
   company: string;
   location: string;
@@ -52,7 +52,7 @@ const JobCard = ({ id, title, company, location, type, salary, posted, descripti
         </div>
         <Button 
           className="bg-primary-gradient transition-transform hover:scale-105"
-          onClick={() => navigate(`/jobs/${id}`)}
+          onClick={() => navigate(`/job-application/${id}`)}
         >
           Apply Now
         </Button>

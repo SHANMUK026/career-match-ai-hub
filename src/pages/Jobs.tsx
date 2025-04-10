@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -8,11 +8,13 @@ import JobSearch from '@/components/jobs/JobSearch';
 import JobFilters from '@/components/jobs/JobFilters';
 import JobList from '@/components/jobs/JobList';
 import { JobCardProps } from '@/components/jobs/JobCard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Sample job data
+  // Sample job data - in a real app this would come from an API
   const jobs: JobCardProps[] = [
     {
       id: 1,
@@ -76,6 +78,27 @@ const Jobs = () => {
     }
   ];
   
+  // Simulate loading and then display jobs - in a real app this would be an API call
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300); // Fast loading simulation
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Memoize filtered jobs to avoid unnecessary re-renders
+  const filteredJobs = useMemo(() => {
+    if (!searchTerm) return jobs;
+    
+    return jobs.filter(job => 
+      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [jobs, searchTerm]);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -104,7 +127,32 @@ const Jobs = () => {
             
             {/* Job Listings */}
             <div className="md:col-span-3">
-              <JobList jobs={jobs} />
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4].map(i => (
+                    <Skeleton key={i} className="h-40 w-full rounded-md" />
+                  ))}
+                </div>
+              ) : (
+                <>
+                  {filteredJobs.length > 0 ? (
+                    <JobList jobs={filteredJobs} />
+                  ) : (
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
+                      <h3 className="text-xl font-semibold mb-2">No jobs found</h3>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4">
+                        We couldn't find any jobs matching your criteria. Try adjusting your search.
+                      </p>
+                      <Button 
+                        onClick={() => setSearchTerm('')}
+                        variant="outline"
+                      >
+                        Clear Search
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

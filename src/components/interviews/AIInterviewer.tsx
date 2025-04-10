@@ -1,27 +1,27 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { motion } from 'framer-motion';
 
-// Dynamic face animation for AI interviewer
+// Dynamic face animation for AI interviewer - Optimized version
 const AIInterviewer: React.FC = () => {
   const [blink, setBlink] = useState(false);
   const [talking, setTalking] = useState(false);
   
-  // Random blinking effect
+  // Random blinking effect - optimized with less frequent updates
   useEffect(() => {
     const blinkInterval = setInterval(() => {
       setBlink(true);
-      setTimeout(() => setBlink(false), 200);
-    }, Math.random() * 4000 + 2000);
+      setTimeout(() => setBlink(false), 150);
+    }, Math.random() * 5000 + 3000); // Less frequent blinking
     
     return () => clearInterval(blinkInterval);
   }, []);
   
-  // Random talking animation
+  // Random talking animation - optimized with less frequent updates 
   useEffect(() => {
     const talkingInterval = setInterval(() => {
-      setTalking(Math.random() > 0.5);
-    }, 300);
+      setTalking(Math.random() > 0.6); // Talk less frequently
+    }, 500); // Slower animation rate
     
     return () => clearInterval(talkingInterval);
   }, []);
@@ -53,22 +53,22 @@ const AIInterviewer: React.FC = () => {
           <motion.div 
             className="w-4 h-1 bg-white rounded-full mt-1"
             animate={{ 
-              scaleY: talking ? Math.random() * 1.5 + 0.5 : 1,
-              scaleX: talking ? Math.random() * 0.4 + 0.8 : 1
+              scaleY: talking ? Math.random() * 1.2 + 0.5 : 1,
+              scaleX: talking ? Math.random() * 0.3 + 0.8 : 1
             }}
             transition={{ duration: 0.1 }}
           />
         </div>
         
-        {/* Pulse effect for AI */}
+        {/* Pulse effect for AI - optimized to be less resource intensive */}
         <motion.div
-          className="absolute inset-0 rounded-full bg-white"
+          className="absolute inset-0 rounded-full bg-white opacity-10"
           animate={{
-            opacity: [0, 0.1, 0],
-            scale: [1, 1.2, 1],
+            opacity: [0.05, 0.1, 0.05],
+            scale: [1, 1.1, 1],
           }}
           transition={{
-            duration: 2,
+            duration: 3,
             repeat: Infinity,
             repeatType: "loop",
           }}
@@ -78,4 +78,5 @@ const AIInterviewer: React.FC = () => {
   );
 };
 
-export default AIInterviewer;
+// Using memo to prevent unnecessary re-renders
+export default memo(AIInterviewer);

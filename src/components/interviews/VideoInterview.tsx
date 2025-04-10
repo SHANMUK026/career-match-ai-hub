@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AIInterviewer from './AIInterviewer';
+import AIInterviewHelper from './AIInterviewHelper';
 import { useNavigate } from 'react-router-dom';
 import { 
   Video, 
@@ -38,8 +40,17 @@ const VideoInterview: React.FC<VideoInterviewProps> = ({ jobId, jobTitle, compan
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showAIResponse, setShowAIResponse] = useState(false);
   const [userAnswer, setUserAnswer] = useState('');
+  const [aiEnabled, setAiEnabled] = useState(true);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
+  
+  // Load AI enabled setting from localStorage on component mount
+  useEffect(() => {
+    const aiEnabledSetting = localStorage.getItem('aiEnabled');
+    if (aiEnabledSetting !== null) {
+      setAiEnabled(aiEnabledSetting === 'true');
+    }
+  }, []);
   
   const questions = [
     `Tell me about your experience with technologies required for the ${jobTitle} position.`,
@@ -142,6 +153,9 @@ const VideoInterview: React.FC<VideoInterviewProps> = ({ jobId, jobTitle, compan
   return (
     <div className="space-y-6">
       <Card className="p-6 shadow-lg border-gray-200 dark:border-gray-700">
+        {/* Show AI Interview Helper at the top of all interview states when AI is enabled */}
+        {aiEnabled && <AIInterviewHelper isActive={true} />}
+        
         {interviewState === 'setup' && (
           <div className="space-y-6">
             <div className="text-center mb-8">
@@ -400,7 +414,9 @@ const VideoInterview: React.FC<VideoInterviewProps> = ({ jobId, jobTitle, compan
                         <AIInterviewer />
                         <div>
                           <h3 className="font-medium text-readable mb-1">AI Interviewer Feedback</h3>
-                          <p className="text-readable-secondary text-sm">{aiResponses[currentQuestion]}</p>
+                          <p className="text-readable-secondary text-sm">
+                            {aiEnabled ? aiResponses[currentQuestion] : "AI feedback is currently disabled. Enable AI in settings to receive feedback."}
+                          </p>
                           
                           <div className="flex justify-end space-x-2 mt-3">
                             <Button variant="outline" size="sm">

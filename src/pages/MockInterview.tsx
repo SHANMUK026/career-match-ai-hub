@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,7 +10,8 @@ import InterviewHistoryComponent from '@/components/interviews/mock/InterviewHis
 import InterviewTips from '@/components/interviews/mock/InterviewTips';
 import InterviewFeedback from '@/components/interviews/mock/InterviewFeedback';
 import { useMockInterview } from '@/components/interviews/mock/useMockInterview';
-import { Brain, ThumbsUp, Award, Star } from 'lucide-react';
+import { Brain, ThumbsUp, Award, Star, AlertCircle } from 'lucide-react';
+import { Alert } from '@/components/ui/alert';
 
 const MockInterview = () => {
   const {
@@ -32,6 +33,14 @@ const MockInterview = () => {
     switchToInterviewTab
   } = useMockInterview();
   
+  const [apiKeyExists, setApiKeyExists] = useState(false);
+  
+  // Check if API key exists
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('interviewAIApiKey');
+    setApiKeyExists(!!savedApiKey);
+  }, []);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -41,6 +50,18 @@ const MockInterview = () => {
           <p className="text-gray-600 mb-8">
             Practice your interview skills with our AI-powered mock interviews
           </p>
+          
+          {!apiKeyExists && (
+            <Alert variant="warning" className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+              <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              <div>
+                <h4 className="font-medium text-yellow-800 dark:text-yellow-300">AI Key Required</h4>
+                <p className="text-yellow-700 dark:text-yellow-400 text-sm">
+                  For the full AI interview experience, please add your API key in Interview AI Settings.
+                </p>
+              </div>
+            </Alert>
+          )}
           
           <Tabs defaultValue="interview" className="mb-12">
             <TabsList className="mb-6">

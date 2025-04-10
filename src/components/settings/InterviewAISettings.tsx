@@ -7,18 +7,34 @@ import { motion } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Mic, Brain, VideoIcon, AlertCircle } from 'lucide-react';
+import { Sparkles, Mic, Brain, VideoIcon, AlertCircle, Key } from 'lucide-react';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 export const InterviewAISettings = () => {
   const [aiEnabled, setAiEnabled] = useState(true);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [difficulty, setDifficulty] = useState('medium');
   const [feedbackLevel, setFeedbackLevel] = useState([70]);
+  const [apiKey, setApiKey] = useState('');
   
   const handleSaveSettings = () => {
-    toast.success('AI interview settings saved successfully');
+    // Save API key in localStorage for persistence
+    if (apiKey.trim()) {
+      localStorage.setItem('interviewAIApiKey', apiKey.trim());
+      toast.success('AI interview settings saved successfully');
+    } else {
+      toast.error('Please enter an API key to enable AI features');
+    }
   };
+  
+  // Load API key from localStorage on component mount
+  React.useEffect(() => {
+    const savedApiKey = localStorage.getItem('interviewAIApiKey');
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+    }
+  }, []);
   
   return (
     <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
@@ -72,6 +88,25 @@ export const InterviewAISettings = () => {
               onCheckedChange={() => toast.info("Video settings updated")}
             />
           </div>
+          
+          <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg border border-green-100 dark:border-green-800">
+            <div className="flex items-start">
+              <Key className="h-5 w-5 text-green-500 mt-1 mr-2" />
+              <div className="flex-1">
+                <p className="font-medium">AI API Key</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Enter your API key to enable AI interview features
+                </p>
+                <Input
+                  type="password"
+                  placeholder="Enter your AI API key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="bg-white dark:bg-gray-800"
+                />
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="space-y-3 pt-3">
@@ -113,6 +148,7 @@ export const InterviewAISettings = () => {
             <p className="text-sm font-medium">Pro Tip</p>
             <p className="text-xs text-gray-600 dark:text-gray-400">
               For the most realistic interview experience, we recommend enabling both voice mode and video recording.
+              Make sure to enter a valid API key to use AI features.
             </p>
           </div>
         </div>

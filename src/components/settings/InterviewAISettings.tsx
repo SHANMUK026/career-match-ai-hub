@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -70,23 +69,28 @@ export const InterviewAISettings = () => {
   };
   
   const handleSaveSettings = () => {
-    // Check if API key is valid
-    if (!validateApiKey()) {
-      toast.error('Please enter a valid API key');
-      return;
+    try {
+      // Check if API key is valid
+      if (!validateApiKey()) {
+        toast.error('Please enter a valid API key');
+        return;
+      }
+      
+      // Save API key in localStorage for persistence
+      localStorage.setItem('interviewAIApiKey', apiKey.trim());
+      
+      // Save other settings
+      localStorage.setItem('aiEnabled', String(aiEnabled));
+      localStorage.setItem('voiceEnabled', String(voiceEnabled));
+      localStorage.setItem('interviewDifficulty', difficulty);
+      localStorage.setItem('feedbackLevel', String(feedbackLevel[0]));
+      
+      setApiKeyStatus('valid');
+      toast.success('AI interview settings saved successfully');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings. Please try again.');
     }
-    
-    // Save API key in localStorage for persistence
-    localStorage.setItem('interviewAIApiKey', apiKey.trim());
-    
-    // Save other settings
-    localStorage.setItem('aiEnabled', String(aiEnabled));
-    localStorage.setItem('voiceEnabled', String(voiceEnabled));
-    localStorage.setItem('interviewDifficulty', difficulty);
-    localStorage.setItem('feedbackLevel', String(feedbackLevel[0]));
-    
-    setApiKeyStatus('valid');
-    toast.success('AI interview settings saved successfully');
   };
   
   return (

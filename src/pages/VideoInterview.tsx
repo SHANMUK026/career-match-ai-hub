@@ -35,6 +35,8 @@ const VideoInterview = () => {
   const startCall = () => {
     if (!apiKeyExists) {
       toast.warning('For the full AI interview experience, please add your API key in Interview AI Settings first.');
+      navigate('/settings');
+      return;
     }
     
     setCallStarted(true);

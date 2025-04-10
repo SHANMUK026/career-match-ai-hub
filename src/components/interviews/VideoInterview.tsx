@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AIInterviewer from './AIInterviewer';
+import { useNavigate } from 'react-router-dom';
 import { 
   Video, 
   Mic, 
@@ -39,6 +39,7 @@ const VideoInterview: React.FC<VideoInterviewProps> = ({ jobId, jobTitle, compan
   const [showAIResponse, setShowAIResponse] = useState(false);
   const [userAnswer, setUserAnswer] = useState('');
   const videoRef = React.useRef<HTMLVideoElement>(null);
+  const navigate = useNavigate();
   
   const questions = [
     `Tell me about your experience with technologies required for the ${jobTitle} position.`,
@@ -134,7 +135,6 @@ const VideoInterview: React.FC<VideoInterviewProps> = ({ jobId, jobTitle, compan
   };
   
   const completeInterview = () => {
-    // In a real app, we would send the recording to the server
     setInterviewState('complete');
     toast.success("Interview completed successfully! Your application has been submitted.");
   };

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -16,13 +15,11 @@ const VideoInterview = () => {
   const [callStarted, setCallStarted] = useState(false);
   const [apiKeyExists, setApiKeyExists] = useState(false);
   
-  // Check if API key exists on component mount
   useEffect(() => {
     const savedApiKey = localStorage.getItem('interviewAIApiKey');
     setApiKeyExists(!!savedApiKey);
   }, []);
   
-  // Mock interview data - in a real app, this would come from an API
   const interviewData = {
     id: id || '1',
     jobTitle: 'Senior Frontend Developer',
@@ -38,7 +35,6 @@ const VideoInterview = () => {
   const startCall = () => {
     if (!apiKeyExists) {
       toast.warning('For the full AI interview experience, please add your API key in Interview AI Settings first.');
-      return;
     }
     
     setCallStarted(true);

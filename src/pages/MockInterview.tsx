@@ -11,7 +11,8 @@ import InterviewTips from '@/components/interviews/mock/InterviewTips';
 import InterviewFeedback from '@/components/interviews/mock/InterviewFeedback';
 import { useMockInterview } from '@/components/interviews/mock/useMockInterview';
 import { Brain, ThumbsUp, Award, Star, AlertCircle } from 'lucide-react';
-import { Alert } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import AIInterviewHelper from '@/components/interviews/AIInterviewHelper';
 
 const MockInterview = () => {
   const {
@@ -144,6 +145,11 @@ const MockInterview = () => {
                     completedQuestions={state.completedQuestions}
                     showFeedback={state.showFeedback}
                   />
+
+                  {/* Add AIInterviewHelper component to provide AI feedback when answering */}
+                  {state.isAnswering && (
+                    <AIInterviewHelper isActive={state.isVoiceMode} />
+                  )}
                 </div>
               )}
             </TabsContent>

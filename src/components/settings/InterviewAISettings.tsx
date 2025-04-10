@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Mic, Brain, VideoIcon, AlertCircle, Key } from 'lucide-react';
+import { Sparkles, Mic, Brain, VideoIcon, AlertCircle, Key, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 
@@ -17,24 +17,77 @@ export const InterviewAISettings = () => {
   const [difficulty, setDifficulty] = useState('medium');
   const [feedbackLevel, setFeedbackLevel] = useState([70]);
   const [apiKey, setApiKey] = useState('');
+  const [apiKeyStatus, setApiKeyStatus] = useState<'none' | 'valid' | 'checking'>('none');
   
-  const handleSaveSettings = () => {
-    // Save API key in localStorage for persistence
-    if (apiKey.trim()) {
-      localStorage.setItem('interviewAIApiKey', apiKey.trim());
-      toast.success('AI interview settings saved successfully');
-    } else {
-      toast.error('Please enter an API key to enable AI features');
-    }
-  };
-  
-  // Load API key from localStorage on component mount
-  React.useEffect(() => {
+  useEffect(() => {
+    // Load settings from localStorage
     const savedApiKey = localStorage.getItem('interviewAIApiKey');
+    const savedAiEnabled = localStorage.getItem('aiEnabled');
+    const savedVoiceEnabled = localStorage.getItem('voiceEnabled');
+    const savedDifficulty = localStorage.getItem('interviewDifficulty');
+    const savedFeedbackLevel = localStorage.getItem('feedbackLevel');
+    
     if (savedApiKey) {
       setApiKey(savedApiKey);
+      setApiKeyStatus('valid');
     }
+    
+    if (savedAiEnabled) setAiEnabled(savedAiEnabled === 'true');
+    if (savedVoiceEnabled) setVoiceEnabled(savedVoiceEnabled === 'true');
+    if (savedDifficulty) setDifficulty(savedDifficulty);
+    if (savedFeedbackLevel) setFeedbackLevel([parseInt(savedFeedbackLevel)]);
   }, []);
+  
+  const validateApiKey = () => {
+    // In a real app, we would validate the API key against the service
+    // For now, we'll just check if it looks like an API key (not empty and has a reasonable length)
+    if (apiKey && apiKey.length > 10) {
+      return true;
+    }
+    return false;
+  };
+  
+  const handleAiEnabledChange = (checked: boolean) => {
+    setAiEnabled(checked);
+    localStorage.setItem('aiEnabled', String(checked));
+    toast.info(`AI features ${checked ? 'enabled' : 'disabled'}`);
+  };
+  
+  const handleVoiceEnabledChange = (checked: boolean) => {
+    setVoiceEnabled(checked);
+    localStorage.setItem('voiceEnabled', String(checked));
+    toast.info(`Voice mode ${checked ? 'enabled' : 'disabled'}`);
+  };
+  
+  const handleDifficultyChange = (value: string) => {
+    setDifficulty(value);
+    localStorage.setItem('interviewDifficulty', value);
+  };
+  
+  const handleFeedbackLevelChange = (value: number[]) => {
+    setFeedbackLevel(value);
+    localStorage.setItem('feedbackLevel', String(value[0]));
+  };
+  
+  const handleSaveSettings = () => {
+    // Check if API key is valid
+    if (!validateApiKey()) {
+      toast.error('Please enter a valid API key');
+      return;
+    }
+    
+    // Save API key in localStorage for persistence
+    localStorage.setItem('interviewAIApiKey', apiKey.trim());
+    
+    // Save other settings
+    localStorage.setItem('aiEnabled', String(aiEnabled));
+    localStorage.setItem('voiceEnabled', String(voiceEnabled));
+    localStorage.setItem('interviewDifficulty', difficulty);
+    localStorage.setItem('feedbackLevel', String(feedbackLevel[0]));
+    
+    setApiKeyStatus('valid');
+    toast.success('AI interview settings saved successfully');
+  };
   
   return (
     <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
@@ -57,7 +110,7 @@ export const InterviewAISettings = () => {
             </div>
             <Switch 
               checked={aiEnabled} 
-              onCheckedChange={setAiEnabled} 
+              onCheckedChange={handleAiEnabledChange}
             />
           </div>
           
@@ -71,7 +124,7 @@ export const InterviewAISettings = () => {
             </div>
             <Switch 
               checked={voiceEnabled} 
-              onCheckedChange={setVoiceEnabled} 
+              onCheckedChange={handleVoiceEnabledChange}
             />
           </div>
           
@@ -93,7 +146,14 @@ export const InterviewAISettings = () => {
             <div className="flex items-start">
               <Key className="h-5 w-5 text-green-500 mt-1 mr-2" />
               <div className="flex-1">
-                <p className="font-medium">AI API Key</p>
+                <p className="font-medium flex items-center">
+                  AI API Key 
+                  {apiKeyStatus === 'valid' && (
+                    <span className="inline-flex items-center ml-2 text-sm text-green-600">
+                      <CheckCircle size={14} className="mr-1" /> Valid
+                    </span>
+                  )}
+                </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Enter your API key to enable AI interview features
                 </p>
@@ -101,7 +161,10 @@ export const InterviewAISettings = () => {
                   type="password"
                   placeholder="Enter your AI API key"
                   value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
+                  onChange={(e) => {
+                    setApiKey(e.target.value);
+                    setApiKeyStatus('none');
+                  }}
                   className="bg-white dark:bg-gray-800"
                 />
               </div>
@@ -111,7 +174,7 @@ export const InterviewAISettings = () => {
         
         <div className="space-y-3 pt-3">
           <Label htmlFor="interview-difficulty">Interview Difficulty</Label>
-          <Select value={difficulty} onValueChange={setDifficulty}>
+          <Select value={difficulty} onValueChange={handleDifficultyChange}>
             <SelectTrigger id="interview-difficulty" className="w-full">
               <SelectValue placeholder="Select difficulty" />
             </SelectTrigger>
@@ -131,10 +194,10 @@ export const InterviewAISettings = () => {
           </div>
           <Slider 
             id="feedback-level" 
-            defaultValue={[70]} 
+            value={feedbackLevel}
             max={100} 
             step={10} 
-            onValueChange={setFeedbackLevel} 
+            onValueChange={handleFeedbackLevelChange}
           />
           <div className="flex justify-between text-xs text-gray-500">
             <span>Basic</span>

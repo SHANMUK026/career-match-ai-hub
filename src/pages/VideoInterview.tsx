@@ -1,18 +1,26 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import VideoCall from '@/components/interviews/VideoCall';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Calendar, Clock, Building, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Building, User, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const VideoInterview = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [callStarted, setCallStarted] = useState(false);
+  const [apiKeyExists, setApiKeyExists] = useState(false);
+  
+  // Check if API key exists on component mount
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('interviewAIApiKey');
+    setApiKeyExists(!!savedApiKey);
+  }, []);
   
   // Mock interview data - in a real app, this would come from an API
   const interviewData = {
@@ -28,6 +36,11 @@ const VideoInterview = () => {
   };
   
   const startCall = () => {
+    if (!apiKeyExists) {
+      toast.warning('For the full AI interview experience, please add your API key in Interview AI Settings first.');
+      return;
+    }
+    
     setCallStarted(true);
     toast.success('Joining interview call...');
   };
@@ -61,6 +74,18 @@ const VideoInterview = () => {
                       <Building className="mr-2" size={18} />
                       <span>{interviewData.company}</span>
                     </div>
+                    
+                    {!apiKeyExists && (
+                      <Alert variant="default" className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+                        <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                        <div>
+                          <AlertTitle className="text-yellow-800 dark:text-yellow-300">AI Key Required</AlertTitle>
+                          <AlertDescription className="text-yellow-700 dark:text-yellow-400">
+                            For the full AI interview experience, please add your API key in Interview AI Settings.
+                          </AlertDescription>
+                        </div>
+                      </Alert>
+                    )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div className="flex flex-col space-y-4">

@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -13,6 +12,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react', // Explicitly set import source
+      jsxRuntime: 'automatic', // Use automatic JSX runtime
     }),
     mode === 'development' &&
     componentTagger(),
@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   esbuild: {
-    jsxInject: "import React from 'react'", // Avoid needing to import React in every file
+    jsxInject: `import React from 'react'`, // Avoid needing to import React in every file
     legalComments: 'none', // Remove legal comments to reduce size
     treeShaking: true, // Enable tree shaking
   }

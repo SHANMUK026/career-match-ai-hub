@@ -11,10 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({
-      jsxImportSource: 'react', // Explicitly set import source
-      // Remove jsxRuntime as it's not a valid option in the configuration
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -69,7 +66,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   esbuild: {
-    jsxInject: `import React from 'react'`, // Avoid needing to import React in every file
+    jsx: 'automatic', // Use automatic JSX runtime
     legalComments: 'none', // Remove legal comments to reduce size
     treeShaking: true, // Enable tree shaking
   }

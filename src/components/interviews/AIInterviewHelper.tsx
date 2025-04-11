@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,11 @@ interface AIInterviewHelperProps {
 }
 
 const AIInterviewHelper: React.FC<AIInterviewHelperProps> = ({ isActive }) => {
-  const [apiKey, setApiKey] = React.useState<string | null>(null);
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const navigate = useNavigate();
   
   // Load API key from localStorage on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     const savedApiKey = localStorage.getItem('interviewAIApiKey');
     setApiKey(savedApiKey);
   }, []);
@@ -23,7 +23,7 @@ const AIInterviewHelper: React.FC<AIInterviewHelperProps> = ({ isActive }) => {
     return null;
   }
   
-  if (!apiKey) {
+  if (!apiKey || apiKey.length <= 10) {
     return (
       <Alert variant="destructive" className="mb-4">
         <AlertCircle className="h-4 w-4" />

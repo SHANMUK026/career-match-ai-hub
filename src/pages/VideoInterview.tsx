@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -16,8 +17,9 @@ const VideoInterview = () => {
   const [apiKeyExists, setApiKeyExists] = useState(false);
   
   useEffect(() => {
+    // Check if API key exists in localStorage
     const savedApiKey = localStorage.getItem('interviewAIApiKey');
-    setApiKeyExists(!!savedApiKey);
+    setApiKeyExists(!!savedApiKey && savedApiKey.length > 10);
   }, []);
   
   const interviewData = {

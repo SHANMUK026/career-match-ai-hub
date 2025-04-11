@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -12,7 +13,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react', // Explicitly set import source
-      jsxRuntime: 'automatic', // Use automatic JSX runtime
+      // Remove jsxRuntime as it's not a valid option in the configuration
     }),
     mode === 'development' &&
     componentTagger(),

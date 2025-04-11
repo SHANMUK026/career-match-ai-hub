@@ -1,7 +1,6 @@
 
-// This file is just a placeholder to update browserslist
-// We're handling browserslist configuration through vite.config.ts and esbuild options
-// The actual browserslist configuration should be added to package.json in a real project
+// This file contains the browserslist configuration for the project
+// It will be used by tools like autoprefixer, babel, etc.
 export const browserslistConfig = {
   production: [
     '>0.2%',
@@ -14,3 +13,6 @@ export const browserslistConfig = {
     'last 1 safari version'
   ]
 };
+
+// Run this command to update browserslist database:
+// npx update-browserslist-db@latest

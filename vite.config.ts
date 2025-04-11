@@ -23,6 +23,12 @@ export default defineConfig(({ mode }) => ({
   build: {
     // Enhanced build optimization
     minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
     cssMinify: true,
     rollupOptions: {
       output: {

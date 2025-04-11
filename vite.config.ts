@@ -11,7 +11,9 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      jsxImportSource: 'react', // Explicitly set import source
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -61,6 +63,9 @@ export default defineConfig(({ mode }) => ({
       '@radix-ui/react-toggle',
       'lucide-react'
     ], // Prebuilt deps for faster dev startup
+    esbuildOptions: {
+      jsx: 'automatic', // Use automatic JSX runtime
+    }
   },
   esbuild: {
     jsxInject: "import React from 'react'", // Avoid needing to import React in every file

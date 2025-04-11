@@ -43,8 +43,6 @@ const AIInterviewHelper: React.FC<AIInterviewHelperProps> = ({ isActive }) => {
     );
   }
   
-  // Here we would normally make API calls with the apiKey
-  // This component just verifies the API key exists
   return (
     <Alert className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 mb-4">
       <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />

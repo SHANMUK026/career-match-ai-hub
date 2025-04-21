@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxRuntime: 'automatic',
+      // SWC options for the react plugin
+      // Removing the jsxRuntime property as it's not supported
     }),
     mode === 'development' &&
     componentTagger(),

@@ -25,7 +25,8 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
   
   // Determine face size based on AI interviewer size
   const getFaceSize = (): "sm" | "md" | "lg" => {
-    return 'lg';
+    // Fix: Return a valid size instead of a string literal that doesn't match the type
+    return "lg";
   };
   
   // Determine if this is an AI interview based on the interviewerName

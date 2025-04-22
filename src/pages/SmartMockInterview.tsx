@@ -276,8 +276,8 @@ const SmartMockInterview = () => {
                   <h2 className="text-xl font-semibold mb-4">Set Up Your Interview</h2>
                   
                   {cameraPermission === false && (
-                    <Alert variant="destructive" className="mb-6">
-                      <AlertTriangle className="h-4 w-4" />
+                    <Alert variant="default" className="bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800">
+                      <AlertTriangle className="h-4 w-4 text-yellow-600" />
                       <AlertTitle>Camera Access Required</AlertTitle>
                       <AlertDescription>
                         Video interview mode requires camera and microphone permissions. Please grant access in your browser settings.
@@ -407,7 +407,7 @@ const SmartMockInterview = () => {
                   />
 
                   {securityEnabled && windowFocusLost > 0 && (
-                    <Alert variant="destructive" className="bg-yellow-50 border-yellow-200">
+                    <Alert variant="default" className="bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800">
                       <AlertTriangle className="h-4 w-4 text-yellow-600" />
                       <AlertTitle className="text-yellow-700">Security Alert</AlertTitle>
                       <AlertDescription className="text-yellow-700">

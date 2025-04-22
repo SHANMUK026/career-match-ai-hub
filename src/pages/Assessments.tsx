@@ -579,7 +579,7 @@ const Assessments = () => {
               </div>
               
               {securityViolations > 0 && (
-                <Alert variant="destructive" className="bg-yellow-50 border-yellow-200">
+                <Alert variant="default" className="bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800">
                   <AlertTriangle className="h-4 w-4 text-yellow-600" />
                   <AlertTitle className="text-yellow-700">Security Alert</AlertTitle>
                   <AlertDescription className="text-yellow-700">

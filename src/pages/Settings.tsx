@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,32 +11,27 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Profile, UserData } from '@/types/profile';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SettingsSidebar } from '@/components/settings/SettingsSidebar';
 import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';
 import { useTheme } from '@/contexts/ThemeContext';
-import { InterviewAISettings } from '@/components/settings/InterviewAISettings';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [showNotification, setShowNotification] = useState(true);
-  const [userData, setUserData] = useState<UserData>({
+  const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     title: '',
     location: '',
-    bio: '',
-    experience: '',
-    education: '',
     notificationsEmail: true,
     notificationsApp: true,
     notificationsInterviews: true,
@@ -66,22 +62,17 @@ const Settings = () => {
         }
         
         if (data) {
-          const profile = data as unknown as Profile;
-          
           setUserData({
-            firstName: profile.first_name || '',
-            lastName: profile.last_name || '',
+            firstName: data.first_name || '',
+            lastName: data.last_name || '',
             email: session.user.email || '',
-            title: profile.title || '',
-            location: profile.location || '',
-            bio: profile.bio || '',
-            experience: profile.experience || '',
-            education: profile.education || '',
-            notificationsEmail: profile.notifications_email !== false,
-            notificationsApp: profile.notifications_app !== false,
-            notificationsInterviews: profile.notifications_interviews !== false,
-            notificationsJobs: profile.notifications_jobs !== false,
-            theme: profile.theme || 'system',
+            title: data.title || '',
+            location: data.location || '',
+            notificationsEmail: data.notifications_email !== false,
+            notificationsApp: data.notifications_app !== false,
+            notificationsInterviews: data.notifications_interviews !== false,
+            notificationsJobs: data.notifications_jobs !== false,
+            theme: data.theme || 'system',
           });
         } else {
           setUserData(prev => ({
@@ -111,6 +102,7 @@ const Settings = () => {
         return;
       }
       
+      // Only update fields that exist in the database schema
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -118,9 +110,6 @@ const Settings = () => {
           last_name: userData.lastName,
           title: userData.title,
           location: userData.location,
-          bio: userData.bio,
-          experience: userData.experience,
-          education: userData.education,
           notifications_email: userData.notificationsEmail,
           notifications_app: userData.notificationsApp,
           notifications_interviews: userData.notificationsInterviews,
@@ -131,6 +120,8 @@ const Settings = () => {
         .eq('id', session.user.id);
       
       if (error) {
+        console.error('Update profile error:', error);
+        toast.error('Failed to update profile: ' + error.message);
         throw error;
       }
       
@@ -148,7 +139,7 @@ const Settings = () => {
     setUserData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSwitchChange = (field: keyof UserData, value: boolean) => {
+  const handleSwitchChange = (field: string, value: boolean) => {
     setUserData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -210,7 +201,7 @@ const Settings = () => {
           <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           
           <div className="flex-1 space-y-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs value={activeTab} className="w-full">
               <TabsContent value="profile" className="m-0">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -300,43 +291,6 @@ const Settings = () => {
                               className="transition-shadow focus:shadow-md"
                             />
                           </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="experience">Years of Experience</Label>
-                            <Input 
-                              id="experience"
-                              name="experience"
-                              value={userData.experience}
-                              onChange={handleInputChange}
-                              placeholder="e.g. 5"
-                              className="transition-shadow focus:shadow-md"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="education">Highest Education</Label>
-                            <Input 
-                              id="education"
-                              name="education"
-                              value={userData.education}
-                              onChange={handleInputChange}
-                              placeholder="e.g. Master's Degree"
-                              className="transition-shadow focus:shadow-md"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="bio">Bio</Label>
-                          <Textarea 
-                            id="bio"
-                            name="bio"
-                            value={userData.bio}
-                            onChange={handleInputChange}
-                            placeholder="Tell us about yourself and your career goals..."
-                            className="min-h-[120px] transition-shadow focus:shadow-md"
-                          />
                         </div>
                       </div>
                       
@@ -634,10 +588,6 @@ const Settings = () => {
                     </CardContent>
                   </Card>
                 </motion.div>
-              </TabsContent>
-
-              <TabsContent value="interview-ai" className="m-0">
-                <InterviewAISettings />
               </TabsContent>
             </Tabs>
           </div>

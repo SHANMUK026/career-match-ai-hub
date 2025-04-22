@@ -18,6 +18,7 @@ import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Theme } from '@/types/profile';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const Settings = () => {
     notificationsApp: true,
     notificationsInterviews: true,
     notificationsJobs: true,
-    theme: theme,
+    theme: theme as Theme,
   });
 
   useEffect(() => {

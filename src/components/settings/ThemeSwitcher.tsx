@@ -3,6 +3,7 @@ import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun, Monitor } from 'lucide-react';
+import { Theme } from '@/types/profile';
 
 export const ThemeCard = ({ label }: { label: string }) => {
   return (

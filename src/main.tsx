@@ -5,8 +5,7 @@ import App from './App.tsx';
 import './index.css';
 import './App.css';
 
-// For debugging
-console.log("Application starting...");
+console.log("Application starting - v1.0.1");
 
 const rootElement = document.getElementById("root");
 
@@ -14,11 +13,26 @@ if (rootElement) {
   console.log("Root element found, mounting React application");
   const root = createRoot(rootElement);
   
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  // Add error boundary to catch and display rendering errors
+  try {
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+    console.log("React application mounted successfully");
+  } catch (error) {
+    console.error("Failed to render application:", error);
+    rootElement.innerHTML = `
+      <div style="padding: 20px; text-align: center; font-family: system-ui, sans-serif;">
+        <h2>Something went wrong</h2>
+        <p>The application couldn't be loaded. Please try refreshing the page.</p>
+        <button onclick="window.location.reload()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 16px;">
+          Refresh Page
+        </button>
+      </div>
+    `;
+  }
 } else {
   console.error("Root element not found. DOM might not be fully loaded or element with id 'root' doesn't exist.");
 }

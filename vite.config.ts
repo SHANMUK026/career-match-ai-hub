@@ -10,7 +10,18 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      // Use faster SWC transform
+      swcOptions: {
+        jsc: {
+          transform: {
+            react: {
+              runtime: 'automatic'
+            }
+          }
+        }
+      }
+    }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -28,6 +39,12 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('react') || id.includes('react-router-dom')) {
               return 'react-vendor';
             }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('framer-motion')) {
+              return 'animation-vendor';
+            }
             return 'vendor';
           }
         }
@@ -40,7 +57,9 @@ export default defineConfig(({ mode }) => ({
     include: [
       'react', 
       'react-dom', 
-      'react-router-dom'
+      'react-router-dom',
+      'framer-motion',
+      '@radix-ui/react-toast'
     ]
   }
 }));

@@ -17,10 +17,28 @@ if (!container) {
   newContainer.id = 'root';
   document.body.appendChild(newContainer);
   
-  const root = createRoot(newContainer);
-  root.render(<App />);
+  try {
+    const root = createRoot(newContainer);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (error) {
+    console.error("Error rendering application:", error);
+    newContainer.innerHTML = '<div style="color: red; padding: 20px;">An error occurred while loading the application. Please check the console for details.</div>';
+  }
 } else {
   console.log("Rendering to existing root element");
-  const root = createRoot(container);
-  root.render(<App />);
+  try {
+    const root = createRoot(container);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (error) {
+    console.error("Error rendering application:", error);
+    container.innerHTML = '<div style="color: red; padding: 20px;">An error occurred while loading the application. Please check the console for details.</div>';
+  }
 }

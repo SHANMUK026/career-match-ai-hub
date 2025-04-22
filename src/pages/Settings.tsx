@@ -73,7 +73,7 @@ const Settings = () => {
             notificationsApp: data.notifications_app !== false,
             notificationsInterviews: data.notifications_interviews !== false,
             notificationsJobs: data.notifications_jobs !== false,
-            theme: data.theme || 'system',
+            theme: (data.theme || 'system') as Theme,
           });
         } else {
           setUserData(prev => ({

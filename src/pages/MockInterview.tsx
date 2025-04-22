@@ -1,217 +1,32 @@
-import React, { useEffect, useState } from 'react';
+
+import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import InterviewSetup from '@/components/interviews/mock/InterviewSetup';
-import InterviewQuestion from '@/components/interviews/mock/InterviewQuestion';
-import InterviewProgress from '@/components/interviews/mock/InterviewProgress';
-import InterviewHistoryComponent from '@/components/interviews/mock/InterviewHistory';
-import InterviewTips from '@/components/interviews/mock/InterviewTips';
-import InterviewFeedback from '@/components/interviews/mock/InterviewFeedback';
-import { useMockInterview } from '@/components/interviews/mock/useMockInterview';
-import { Brain, ThumbsUp, Award, Star, AlertCircle, Video, MessageSquare } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import AIInterviewHelper from '@/components/interviews/AIInterviewHelper';
 import VideoCall from '@/components/interviews/VideoCall';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 
 const MockInterview = () => {
-  const {
-    state,
-    questions,
-    setSelectedRole,
-    setSelectedDifficulty,
-    toggleVoiceMode,
-    handleRecordingStateChange,
-    handleAudioRecorded,
-    startInterview,
-    startAnswering,
-    handleUserAnswerChange,
-    submitAnswer,
-    moveToNextQuestion,
-    skipQuestion,
-    endInterview,
-    finishWithFeedback,
-    switchToInterviewTab
-  } = useMockInterview();
-  
-  const [apiKeyExists, setApiKeyExists] = useState(false);
-  const [useVideoMode, setUseVideoMode] = useState(false);
-  
-  useEffect(() => {
-    const savedApiKey = localStorage.getItem('interviewAIApiKey');
-    setApiKeyExists(!!savedApiKey);
-  }, []);
-  
-  const handleEndVideoCall = () => {
-    setUseVideoMode(false);
-    finishWithFeedback();
+  const handleEndInterview = () => {
+    // Handle interview completion
+    console.log('Interview ended');
   };
 
-  const toggleVideoMode = () => {
-    if (!useVideoMode) {
-      toast.info("Switching to video interview mode");
-    } else {
-      toast.info("Switching to text interview mode");
-    }
-    setUseVideoMode(!useVideoMode);
-  };
-  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-2">Mock Interview Practice</h1>
+          <h1 className="text-3xl font-bold mb-2">AI Video Interview</h1>
           <p className="text-gray-600 mb-8">
-            Practice your interview skills with our AI-powered mock interviews
+            Complete your interview with our AI interviewer
           </p>
           
-          {!apiKeyExists && (
-            <Alert variant="default" className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
-              <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-              <div>
-                <AlertTitle className="font-medium text-yellow-800 dark:text-yellow-300">AI Key Required</AlertTitle>
-                <AlertDescription className="text-yellow-700 dark:text-yellow-400 text-sm">
-                  For the full AI interview experience, please add your API key in Interview AI Settings.
-                </AlertDescription>
-              </div>
-            </Alert>
-          )}
-          
-          <Tabs defaultValue="interview" className="mb-12">
-            <TabsList className="mb-6">
-              <TabsTrigger value="interview">Practice Interview</TabsTrigger>
-              <TabsTrigger value="history">Interview History</TabsTrigger>
-              <TabsTrigger value="tips">Interview Tips</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="interview">
-              {!state.interviewStarted ? (
-                <InterviewSetup
-                  selectedRole={state.selectedRole}
-                  selectedDifficulty={state.selectedDifficulty}
-                  onRoleChange={setSelectedRole}
-                  onDifficultyChange={setSelectedDifficulty}
-                  onStartInterview={startInterview}
-                />
-              ) : state.interviewScore ? (
-                <InterviewFeedback
-                  overallScore={state.interviewScore.overallScore}
-                  feedbackItems={[
-                    {
-                      category: 'Technical Knowledge',
-                      score: state.interviewScore.technicalKnowledge,
-                      feedback: 'You demonstrated good understanding of technical concepts',
-                      icon: <Brain className="text-blue-500" size={18} />
-                    },
-                    {
-                      category: 'Communication Skills',
-                      score: state.interviewScore.communicationSkills,
-                      feedback: 'Your explanations were clear and structured',
-                      icon: <ThumbsUp className="text-green-500" size={18} />
-                    },
-                    {
-                      category: 'Problem Solving',
-                      score: state.interviewScore.problemSolving,
-                      feedback: 'You showed methodical approach to solving problems',
-                      icon: <Award className="text-purple-500" size={18} />
-                    },
-                    {
-                      category: 'Culture Fit',
-                      score: state.interviewScore.cultureFit,
-                      feedback: 'You demonstrated alignment with company values',
-                      icon: <Star className="text-yellow-500" size={18} />
-                    }
-                  ]}
-                  detailedFeedback={state.interviewFeedback || ''}
-                  onFinish={finishWithFeedback}
-                />
-              ) : useVideoMode ? (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Video Interview Mode</h2>
-                    <Button 
-                      onClick={toggleVideoMode} 
-                      variant="outline"
-                      className="flex items-center gap-2"
-                    >
-                      <MessageSquare size={16} />
-                      Switch to Text Mode
-                    </Button>
-                  </div>
-                
-                  <div className="h-[70vh] mb-6 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
-                    <VideoCall 
-                      interviewId="mock-interview" 
-                      interviewerName="AI Interviewer"
-                      onEnd={handleEndVideoCall}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="flex justify-end mb-4">
-                    <Button 
-                      onClick={toggleVideoMode} 
-                      className="bg-primary-gradient flex items-center gap-2"
-                    >
-                      <Video size={16} />
-                      Switch to Video Interview
-                    </Button>
-                  </div>
-                  
-                  <InterviewQuestion
-                    currentQuestionIndex={state.currentQuestionIndex}
-                    totalQuestions={questions.length}
-                    question={questions[state.currentQuestionIndex]}
-                    selectedRole={state.selectedRole}
-                    selectedDifficulty={state.selectedDifficulty}
-                    timer={state.timer}
-                    isTimerRunning={state.isTimerRunning}
-                    isAnswering={state.isAnswering}
-                    isVoiceMode={state.isVoiceMode}
-                    isRecording={state.isRecording}
-                    userAnswer={state.userAnswer}
-                    showFeedback={state.showFeedback}
-                    feedback={state.feedback}
-                    onUserAnswerChange={handleUserAnswerChange}
-                    onStartAnswering={startAnswering}
-                    onSubmitAnswer={submitAnswer}
-                    onMoveToNextQuestion={moveToNextQuestion}
-                    onSkipQuestion={skipQuestion}
-                    onEndInterview={endInterview}
-                    onToggleVoiceMode={toggleVoiceMode}
-                    onAudioRecorded={handleAudioRecorded}
-                    onRecordingStateChange={handleRecordingStateChange}
-                  />
-                  
-                  <InterviewProgress
-                    totalQuestions={questions.length}
-                    currentQuestionIndex={state.currentQuestionIndex}
-                    completedQuestions={state.completedQuestions}
-                    showFeedback={state.showFeedback}
-                  />
-
-                  {state.isAnswering && (
-                    <AIInterviewHelper isActive={state.isVoiceMode} />
-                  )}
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="history">
-              <InterviewHistoryComponent
-                interviewHistory={state.interviewHistory}
-                onStartNewInterview={switchToInterviewTab}
-              />
-            </TabsContent>
-            
-            <TabsContent value="tips">
-              <InterviewTips />
-            </TabsContent>
-          </Tabs>
+          <div className="h-[70vh] mb-6 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+            <VideoCall 
+              interviewId="mock-interview"
+              interviewerName="AI Interviewer"
+              onEnd={handleEndInterview}
+            />
+          </div>
         </div>
       </main>
       <Footer />

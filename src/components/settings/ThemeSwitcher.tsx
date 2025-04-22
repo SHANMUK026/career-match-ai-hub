@@ -15,7 +15,6 @@ interface ThemeCardProps {
 
 export const ThemeCard = ({ theme, label, icon, current, onClick }: ThemeCardProps) => {
   const isActive = current === theme;
-  const { isDark } = useTheme();
   
   return (
     <motion.div 

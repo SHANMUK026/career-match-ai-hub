@@ -11,7 +11,11 @@ export default defineConfig(({ mode }) => ({
     strictPort: false, // Allow fallback to another port if 8080 is taken
     hmr: {
       overlay: true, // Show errors as overlay
+      clientPort: 8080 // Force client to use this port for HMR
     },
+    watch: {
+      usePolling: true, // Better file watching on some systems
+    }
   },
   plugins: [
     react({

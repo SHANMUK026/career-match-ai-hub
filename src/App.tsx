@@ -42,10 +42,6 @@ const App = () => {
     },
   }));
 
-  useEffect(() => {
-    console.log("App component mounted");
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

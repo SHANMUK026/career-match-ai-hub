@@ -11,16 +11,10 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // Use faster SWC transform
-      swcOptions: {
-        jsc: {
-          transform: {
-            react: {
-              runtime: 'automatic'
-            }
-          }
-        }
-      }
+      // Configure SWC properly according to the plugin's API
+      plugins: [
+        ['@swc/plugin-emotion', {}]
+      ]
     }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),

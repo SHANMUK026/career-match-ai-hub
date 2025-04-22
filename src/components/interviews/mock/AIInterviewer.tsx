@@ -1,112 +1,123 @@
 
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface AIInterviewerProps {
-  isActive?: boolean;
+  isActive: boolean;
   isSpeaking?: boolean;
   size?: 'sm' | 'md' | 'lg';
 }
 
-// Dynamic face animation for AI interviewer
 const AIInterviewer: React.FC<AIInterviewerProps> = ({ 
-  isActive = true, 
+  isActive, 
   isSpeaking = false,
   size = 'md'
 }) => {
-  const [blink, setBlink] = useState(false);
-  const [talking, setTalking] = useState(false);
+  const [blinkInterval, setBlinkInterval] = useState<number>(5);
+  const { theme } = useTheme();
   
-  // Helper function to get face size based on prop
-  const getFaceSize = () => {
+  // Make eyes blink occasionally
+  useEffect(() => {
+    if (!isActive) return;
+    
+    const interval = setInterval(() => {
+      const randomInterval = Math.floor(Math.random() * 5) + 2;
+      setBlinkInterval(randomInterval);
+    }, (blinkInterval * 1000));
+    
+    return () => clearInterval(interval);
+  }, [isActive, blinkInterval]);
+  
+  // Determine size dimensions
+  const getDimensions = () => {
     switch(size) {
-      case 'sm': return { face: 'w-8 h-8', eyes: 'w-1.5 h-1.5', mouth: 'w-3 h-1' };
-      case 'lg': return { face: 'w-16 h-16', eyes: 'w-2.5 h-2.5', mouth: 'w-5 h-1.5' };
-      default: return { face: 'w-12 h-12', eyes: 'w-2 h-2', mouth: 'w-4 h-1' };
+      case 'sm': return { width: 80, height: 80, fontSize: 'text-xs' };
+      case 'lg': return { width: 180, height: 180, fontSize: 'text-lg' };
+      default: return { width: 120, height: 120, fontSize: 'text-base' };
     }
   };
   
-  // Random blinking effect - optimized with less frequent updates
-  useEffect(() => {
-    if (!isActive) return;
-    
-    const blinkInterval = setInterval(() => {
-      setBlink(true);
-      setTimeout(() => setBlink(false), 150);
-    }, Math.random() * 5000 + 3000); // Less frequent blinking
-    
-    return () => clearInterval(blinkInterval);
-  }, [isActive]);
+  const { width, height, fontSize } = getDimensions();
   
-  // Talking animation based on isSpeaking prop
-  useEffect(() => {
-    if (!isActive) return;
-    
-    setTalking(isSpeaking);
-    
-    // Also add random mouth movements when speaking
-    if (isSpeaking) {
-      const talkingInterval = setInterval(() => {
-        setTalking(prev => !prev); // Create a more realistic talking animation
-      }, 150);
-      
-      return () => clearInterval(talkingInterval);
+  // Face animation variants
+  const faceVariants = {
+    idle: {
+      y: [0, 2, 0],
+      transition: {
+        repeat: Infinity,
+        duration: 3,
+        ease: "easeInOut"
+      }
+    },
+    active: {
+      y: [0, 1, 0],
+      transition: {
+        repeat: Infinity,
+        duration: 2,
+        ease: "easeInOut"
+      }
     }
-  }, [isSpeaking, isActive]);
+  };
   
-  const sizeClasses = getFaceSize();
-  
+  // Eye animation variants
+  const eyeVariants = {
+    open: { scaleY: 1 },
+    blink: { scaleY: 0, transition: { duration: 0.1 } }
+  };
+
   return (
-    <motion.div 
-      className={`rounded-full bg-gradient-to-r from-blue-500 to-purple-600 ${sizeClasses.face} flex items-center justify-center text-white font-bold text-xl`}
-      animate={{ scale: talking ? 1.05 : 1 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="relative">
-        {/* Face */}
-        <div className="flex flex-col items-center">
-          {/* Eyes */}
-          <div className="flex space-x-2">
-            <motion.div 
-              className={`${sizeClasses.eyes} bg-white rounded-full`}
-              animate={{ scaleY: blink ? 0.1 : 1 }}
-              transition={{ duration: 0.1 }}
-            />
-            <motion.div 
-              className={`${sizeClasses.eyes} bg-white rounded-full`}
-              animate={{ scaleY: blink ? 0.1 : 1 }}
-              transition={{ duration: 0.1 }}
-            />
-          </div>
-          
-          {/* Mouth */}
+    <div className={`flex flex-col items-center transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-70'}`}>
+      {/* AI Face */}
+      <motion.div 
+        className={`rounded-full flex items-center justify-center relative ai-avatar-glow
+          ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}
+        style={{ 
+          width, 
+          height,
+          boxShadow: isActive ? `0 0 20px ${theme === 'dark' ? '#6366f1' : '#c7d2fe'}` : 'none',
+        }}
+        animate={isActive ? "active" : "idle"}
+        variants={faceVariants}
+      >
+        {/* Eyes */}
+        <div className="flex space-x-4">
           <motion.div 
-            className={`${sizeClasses.mouth} bg-white rounded-full mt-1`}
-            animate={{ 
-              scaleY: talking ? Math.random() * 1.2 + 0.5 : 1,
-              scaleX: talking ? Math.random() * 0.3 + 0.8 : 1
-            }}
+            className={`w-3 h-5 rounded-full ${theme === 'dark' ? 'bg-blue-400' : 'bg-blue-600'}`}
+            animate={isActive && Math.random() > 0.7 ? "blink" : "open"}
+            variants={eyeVariants}
+            transition={{ duration: 0.1 }}
+          />
+          <motion.div 
+            className={`w-3 h-5 rounded-full ${theme === 'dark' ? 'bg-blue-400' : 'bg-blue-600'}`}
+            animate={isActive && Math.random() > 0.7 ? "blink" : "open"}
+            variants={eyeVariants}
             transition={{ duration: 0.1 }}
           />
         </div>
         
-        {/* Pulse effect for AI - optimized to be less resource intensive */}
-        <motion.div
-          className="absolute inset-0 rounded-full bg-white opacity-10"
-          animate={{
-            opacity: [0.05, 0.1, 0.05],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatType: "loop",
-          }}
+        {/* Mouth */}
+        <motion.div 
+          className={`absolute bottom-[30%] w-10 h-1 rounded-full ${theme === 'dark' ? 'bg-blue-400' : 'bg-blue-600'}`}
+          animate={isSpeaking ? {
+            height: ["2px", "6px", "2px"],
+            transition: {
+              repeat: Infinity,
+              duration: 0.3
+            }
+          } : {}}
         />
+      </motion.div>
+      
+      {/* AI Label */}
+      <div className={`mt-3 font-medium ${fontSize} ai-gradient-text`}>
+        AI Interviewer
+        {isSpeaking && (
+          <span className="inline-block ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
-// Using memo to prevent unnecessary re-renders
-export default memo(AIInterviewer);
+export default AIInterviewer;

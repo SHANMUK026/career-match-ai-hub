@@ -7,6 +7,7 @@ import { useVideoCall } from './video-call/useVideoCall';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { Settings, Maximize2, MinusCircle } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface VideoCallProps {
   interviewId: string;
@@ -27,6 +28,7 @@ const VideoCall: React.FC<VideoCallProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showEndCallDialog, setShowEndCallDialog] = useState(false);
+  const { theme } = useTheme();
   
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -109,10 +111,10 @@ const VideoCall: React.FC<VideoCallProps> = ({
       
       {/* Settings dialog */}
       <AlertDialog open={showSettings} onOpenChange={setShowSettings}>
-        <AlertDialogContent>
+        <AlertDialogContent className={theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : ''}>
           <AlertDialogHeader>
             <AlertDialogTitle>Video Call Settings</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className={theme === 'dark' ? 'text-gray-300' : ''}>
               Configure your audio, video, and appearance settings.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -120,7 +122,7 @@ const VideoCall: React.FC<VideoCallProps> = ({
           <div className="py-4 space-y-4">
             <div>
               <h3 className="text-sm font-medium mb-2">Audio Settings</h3>
-              <select className="w-full p-2 border rounded">
+              <select className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
                 <option>Default Microphone</option>
                 <option>Built-in Microphone</option>
                 <option>Headset Microphone</option>
@@ -129,7 +131,7 @@ const VideoCall: React.FC<VideoCallProps> = ({
             
             <div>
               <h3 className="text-sm font-medium mb-2">Video Settings</h3>
-              <select className="w-full p-2 border rounded">
+              <select className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
                 <option>Default Camera</option>
                 <option>Built-in Webcam</option>
                 <option>External Camera</option>
@@ -143,14 +145,14 @@ const VideoCall: React.FC<VideoCallProps> = ({
                 <label htmlFor="low-bandwidth">Low bandwidth mode</label>
               </div>
               <div className="flex items-center mt-2">
-                <input type="checkbox" id="dark-theme" className="mr-2" />
+                <input type="checkbox" id="dark-theme" className="mr-2" checked={theme === 'dark'} readOnly />
                 <label htmlFor="dark-theme">Dark theme</label>
               </div>
             </div>
           </div>
           
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className={theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => {
               toast.success('Settings saved');
               setShowSettings(false);
@@ -163,16 +165,16 @@ const VideoCall: React.FC<VideoCallProps> = ({
       
       {/* End call confirmation dialog */}
       <AlertDialog open={showEndCallDialog} onOpenChange={setShowEndCallDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className={theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : ''}>
           <AlertDialogHeader>
             <AlertDialogTitle>End Interview Call?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className={theme === 'dark' ? 'text-gray-300' : ''}>
               Are you sure you want to end this interview call? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmEndCall} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogCancel className={theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndCall} className="bg-red-600 hover:bg-red-700 text-white">
               <MinusCircle className="h-4 w-4 mr-2" />
               End Call
             </AlertDialogAction>

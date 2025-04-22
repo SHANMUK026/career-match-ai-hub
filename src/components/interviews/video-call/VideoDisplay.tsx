@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRef } from 'react';
 import { User, MonitorX, Loader2, Clock } from 'lucide-react';
 import AIInterviewer from '../mock/AIInterviewer';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface VideoDisplayProps {
   isConnecting: boolean;
@@ -22,10 +23,11 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isAI, setIsAI] = useState(false);
+  const { theme } = useTheme();
   
   // Determine face size based on AI interviewer size
   const getFaceSize = (): "sm" | "md" | "lg" => {
-    // Fix: Return a valid size instead of a string literal that doesn't match the type
+    // Return a valid size that matches the type
     return "lg";
   };
   
@@ -86,7 +88,7 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
   }, [isConnecting]);
   
   return (
-    <div className="w-full bg-gray-900 rounded-lg overflow-hidden relative">
+    <div className={`w-full bg-gray-900 rounded-lg overflow-hidden relative ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
       <div className="h-[60vh]">
         {isConnecting ? (
           <div className="h-full w-full flex flex-col items-center justify-center bg-gray-900 text-white">

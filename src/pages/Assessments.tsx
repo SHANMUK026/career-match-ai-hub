@@ -581,9 +581,9 @@ const Assessments = () => {
               {securityViolations > 0 && (
                 <Alert variant="default" className="bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800">
                   <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                  <AlertTitle className="text-yellow-700">Security Alert</AlertTitle>
-                  <AlertDescription className="text-yellow-700">
-                    {securityViolations} security violation{securityViolations > 1 ? 's' : ''} detected. These will be noted in your assessment report.
+                  <AlertTitle className="text-yellow-700 dark:text-yellow-200">Security Alert</AlertTitle>
+                  <AlertDescription className="text-yellow-700 dark:text-yellow-200">
+                    You have left the assessment tab {securityViolations} times. This will be noted in your assessment report.
                   </AlertDescription>
                 </Alert>
               )}

@@ -16,13 +16,16 @@ import {
   Eye,
   AlertTriangle,
   MessageSquare,
-  Mic
+  Mic,
+  Video
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const SmartMockInterview = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [selectedRole, setSelectedRole] = useState<string>("Frontend Developer");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("Intermediate");
   const [interviewStarted, setInterviewStarted] = useState<boolean>(false);
@@ -254,12 +257,12 @@ const SmartMockInterview = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'}`}>
       <Header />
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold mb-2">Smart Mock Interview</h1>
-          <p className="text-gray-600 mb-8">
+          <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mb-8`}>
             AI-Powered adaptive mock interviews with video responses
           </p>
 
@@ -289,7 +292,7 @@ const SmartMockInterview = () => {
                     <div>
                       <label className="block text-sm font-medium mb-2">Job Role</label>
                       <select
-                        className="w-full p-3 border rounded-md"
+                        className={`w-full p-3 border rounded-md ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
                       >
@@ -305,7 +308,7 @@ const SmartMockInterview = () => {
                     <div>
                       <label className="block text-sm font-medium mb-2">Difficulty Level</label>
                       <select 
-                        className="w-full p-3 border rounded-md"
+                        className={`w-full p-3 border rounded-md ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}
                         value={selectedDifficulty}
                         onChange={(e) => setSelectedDifficulty(e.target.value)}
                       >
@@ -322,28 +325,28 @@ const SmartMockInterview = () => {
                   <div className="border-t pt-6 mb-6">
                     <h3 className="font-medium mb-3">Interview Mode</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <Card className={`p-4 cursor-pointer border-2 ${!isVideoMode && !isVoiceMode ? 'border-primary' : 'border-gray-200'}`} onClick={() => {setIsVideoMode(false); setIsVoiceMode(false);}}>
+                      <Card className={`p-4 cursor-pointer border-2 ${!isVideoMode && !isVoiceMode ? 'border-primary' : 'border-gray-200 dark:border-gray-700'}`} onClick={() => {setIsVideoMode(false); setIsVoiceMode(false);}}>
                         <div className="flex flex-col items-center">
                           <div className="bg-primary/10 p-2 rounded-full mb-2">
                             <MessageSquare className="h-5 w-5 text-primary" />
                           </div>
                           <h4 className="font-medium">Text Response</h4>
-                          <p className="text-xs text-center text-gray-500 mt-1">Type your answers</p>
+                          <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Type your answers</p>
                         </div>
                       </Card>
                       
-                      <Card className={`p-4 cursor-pointer border-2 ${isVoiceMode ? 'border-primary' : 'border-gray-200'}`} onClick={() => {setIsVoiceMode(true); setIsVideoMode(false);}}>
+                      <Card className={`p-4 cursor-pointer border-2 ${isVoiceMode ? 'border-primary' : 'border-gray-200 dark:border-gray-700'}`} onClick={() => {setIsVoiceMode(true); setIsVideoMode(false);}}>
                         <div className="flex flex-col items-center">
                           <div className="bg-primary/10 p-2 rounded-full mb-2">
                             <Mic className="h-5 w-5 text-primary" />
                           </div>
                           <h4 className="font-medium">Voice Response</h4>
-                          <p className="text-xs text-center text-gray-500 mt-1">Record audio answers</p>
+                          <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Record audio answers</p>
                         </div>
                       </Card>
                       
                       <Card 
-                        className={`p-4 cursor-pointer border-2 ${isVideoMode ? 'border-primary' : 'border-gray-200'} ${cameraPermission === false ? 'opacity-50' : ''}`}
+                        className={`p-4 cursor-pointer border-2 ${isVideoMode ? 'border-primary' : 'border-gray-200 dark:border-gray-700'} ${cameraPermission === false ? 'opacity-50' : ''}`}
                         onClick={() => {
                           if (cameraPermission !== false) {
                             setIsVideoMode(true);
@@ -356,7 +359,7 @@ const SmartMockInterview = () => {
                             <Camera className="h-5 w-5 text-primary" />
                           </div>
                           <h4 className="font-medium">Video Response</h4>
-                          <p className="text-xs text-center text-gray-500 mt-1">Record video answers</p>
+                          <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">Record video answers</p>
                           {cameraPermission === false && (
                             <span className="text-xs text-red-500 mt-1">Permission denied</span>
                           )}
@@ -426,7 +429,7 @@ const SmartMockInterview = () => {
                             ? 'bg-primary animate-pulse'
                             : completedQuestions.includes(index)
                               ? 'bg-green-500'
-                              : 'bg-gray-200'
+                              : 'bg-gray-200 dark:bg-gray-700'
                             }`}
                         />
                       ))}

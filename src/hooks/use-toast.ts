@@ -1,16 +1,21 @@
 
-import { Toast, ToastActionElement, ToastProps } from "@/components/ui/toast";
+import { ToastProps } from "@/components/ui/toast";
 import * as React from "react";
 
 const TOAST_LIMIT = 10;
 const TOAST_REMOVE_DELAY = 1000000;
 
-type ToasterToast = Toast & {
+type ToastActionElement = React.ReactElement;
+
+export interface Toast {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
-};
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  variant?: "default" | "destructive";
+}
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
@@ -31,11 +36,11 @@ type ActionType = typeof actionTypes;
 type Action =
   | {
       type: ActionType["ADD_TOAST"];
-      toast: ToasterToast;
+      toast: Toast;
     }
   | {
       type: ActionType["UPDATE_TOAST"];
-      toast: Partial<ToasterToast>;
+      toast: Partial<Toast>;
     }
   | {
       type: ActionType["DISMISS_TOAST"];
@@ -47,7 +52,7 @@ type Action =
     };
 
 interface State {
-  toasts: ToasterToast[];
+  toasts: Toast[];
 }
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
@@ -134,12 +139,12 @@ function dispatch(action: Action) {
   });
 }
 
-type Toast = Omit<ToasterToast, "id">;
+type ToastOptions = Omit<Toast, "id">;
 
-function toast({ ...props }: Toast) {
+function toast(opts: ToastOptions) {
   const id = genId();
 
-  const update = (props: ToasterToast) =>
+  const update = (props: ToastOptions) =>
     dispatch({
       type: actionTypes.UPDATE_TOAST,
       toast: { ...props, id },
@@ -150,7 +155,7 @@ function toast({ ...props }: Toast) {
   dispatch({
     type: actionTypes.ADD_TOAST,
     toast: {
-      ...props,
+      ...opts,
       id,
       open: true,
       onOpenChange: (open) => {

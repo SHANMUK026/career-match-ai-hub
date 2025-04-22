@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
@@ -16,12 +17,44 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
   const [blinkTimer, setBlinkTimer] = useState<number | null>(null);
   const [isBlinking, setIsBlinking] = useState(false);
   
-  // Get avatar size based on size prop
+  // Helper functions that use the size prop
   const getAvatarSize = () => {
     switch(size) {
       case 'sm': return 'h-12 w-12';
       case 'lg': return 'h-24 w-24';
       default: return 'h-20 w-20';
+    }
+  };
+  
+  const getFaceSize = () => {
+    switch(size) {
+      case 'sm': return 'w-8 h-5';
+      case 'lg': return 'w-14 h-8';
+      default: return 'w-12 h-6';
+    }
+  };
+
+  const getEyeSize = () => {
+    switch(size) {
+      case 'sm': return 'w-1.5 h-1.5';
+      case 'lg': return 'w-3 h-3';
+      default: return 'w-2.5 h-2.5';
+    }
+  };
+
+  const getMouthSize = () => {
+    switch(size) {
+      case 'sm': return 'w-5 h-1';
+      case 'lg': return 'w-10 h-2';
+      default: return 'w-8 h-1.5';
+    }
+  };
+
+  const getStatusSize = () => {
+    switch(size) {
+      case 'sm': return 'h-2 w-2';
+      case 'lg': return 'h-4 w-4';
+      default: return 'h-3 w-3';
     }
   };
 
@@ -108,39 +141,6 @@ const AIInterviewer: React.FC<AIInterviewerProps> = ({
       <h3 className="font-medium text-sm">AI Interviewer</h3>
     </motion.div>
   );
-};
-
-// Add these helper functions inside the AIInterviewer component
-const getFaceSize = () => {
-  switch(size) {
-    case 'sm': return 'w-8 h-5';
-    case 'lg': return 'w-14 h-8';
-    default: return 'w-12 h-6';
-  }
-};
-
-const getEyeSize = () => {
-  switch(size) {
-    case 'sm': return 'w-1.5 h-1.5';
-    case 'lg': return 'w-3 h-3';
-    default: return 'w-2.5 h-2.5';
-  }
-};
-
-const getMouthSize = () => {
-  switch(size) {
-    case 'sm': return 'w-5 h-1';
-    case 'lg': return 'w-10 h-2';
-    default: return 'w-8 h-1.5';
-  }
-};
-
-const getStatusSize = () => {
-  switch(size) {
-    case 'sm': return 'h-2 w-2';
-    case 'lg': return 'h-4 w-4';
-    default: return 'h-3 w-3';
-  }
 };
 
 export default AIInterviewer;

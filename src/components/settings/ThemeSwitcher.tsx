@@ -12,12 +12,8 @@ export const ThemeCard = ({ label }: { label: string }) => {
 export const ThemeSwitcher = () => {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <ThemeCard label="Light Mode" />
-        <ThemeCard label="Dark Mode" />
-        <ThemeCard label="System Default" />
-      </div>
+      <h3 className="text-lg font-medium">Theme Settings (Currently Disabled)</h3>
+      <p className="text-sm text-gray-500">Theme functionality has been temporarily disabled</p>
     </div>
   );
 };
-

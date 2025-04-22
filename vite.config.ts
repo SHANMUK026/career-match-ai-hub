@@ -61,11 +61,20 @@ export default defineConfig(({ mode }) => ({
       'react-router-dom',
       'framer-motion',
       '@radix-ui/react-toast',
-      'lucide-react'
-    ]
+      'lucide-react',
+      'sonner'
+    ],
+    force: true
   },
   // Add better error reporting
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
-  }
+  },
+  // Make sure we're not getting stuck in infinite loops
+  css: {
+    devSourcemap: true,
+  },
+  // Clear the cache to ensure fresh builds
+  cacheDir: '.vite_cache',
+  clearScreen: false,
 }));

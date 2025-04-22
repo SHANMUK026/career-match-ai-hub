@@ -43,6 +43,7 @@ export const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
   
   const handleToggleTheme = () => {
+    console.log("Current theme before toggle:", theme);
     if (theme === 'light') {
       setTheme('dark');
     } else if (theme === 'dark') {

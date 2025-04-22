@@ -6,12 +6,12 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: true, // Listen on all addresses
     port: 8080,
+    strictPort: false, // Allow fallback to another port if 8080 is taken
   },
   plugins: [
     react({
-      // Configure SWC properly according to the plugin's API
       plugins: [
         ['@swc/plugin-emotion', {}]
       ]
@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => ({
       }
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: false,
+    sourcemap: mode === 'development',
   },
   optimizeDeps: {
     include: [
@@ -53,7 +53,8 @@ export default defineConfig(({ mode }) => ({
       'react-dom', 
       'react-router-dom',
       'framer-motion',
-      '@radix-ui/react-toast'
+      '@radix-ui/react-toast',
+      'lucide-react'
     ]
   }
 }));

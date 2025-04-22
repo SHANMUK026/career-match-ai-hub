@@ -4,7 +4,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 
 interface ThemeCardProps {
   theme: 'light' | 'dark' | 'system';
@@ -16,25 +15,26 @@ interface ThemeCardProps {
 
 export const ThemeCard = ({ theme, label, icon, current, onClick }: ThemeCardProps) => {
   const isActive = current === theme;
+  const { isDark } = useTheme();
   
   return (
     <motion.div 
       className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-        isActive ? "border-blue-600 ring-2 ring-blue-300 dark:ring-blue-500" : "border-gray-300 dark:border-gray-700"
+        isActive ? "border-primary ring-2 ring-primary/30" : "border-border"
       }`}
       onClick={onClick}
       whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" }}
       whileTap={{ scale: 0.98 }}
     >
       <div className={`h-24 w-full flex items-center justify-center ${
-        theme === 'light' ? "bg-white" : 
-        theme === 'dark' ? "bg-gray-800 text-white" : 
-        "bg-gradient-to-r from-white to-gray-800"
+        theme === 'light' ? "bg-white text-black" : 
+        theme === 'dark' ? (isDark ? "bg-gray-800 text-white" : "bg-gray-900 text-white") : 
+        "bg-gradient-to-r from-white to-gray-800 text-black"
       }`}>
         {icon}
       </div>
       <div className="p-3 text-center">
-        <p className={`font-medium ${theme === 'dark' && current === 'dark' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{label}</p>
+        <p className="font-medium">{label}</p>
       </div>
     </motion.div>
   );

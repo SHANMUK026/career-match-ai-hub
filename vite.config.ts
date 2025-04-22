@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -11,10 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({
-      // SWC options for the react plugin
-      // Removing the jsxRuntime property as it's not supported
-    }),
+    react(),  // Simplified React plugin configuration
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),

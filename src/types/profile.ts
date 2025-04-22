@@ -1,4 +1,6 @@
 
+export type Theme = 'dark' | 'light' | 'system';
+
 export interface Profile {
   id: string;
   created_at: string;
@@ -12,7 +14,7 @@ export interface Profile {
   notifications_app?: boolean;
   notifications_interviews?: boolean;
   notifications_jobs?: boolean;
-  theme?: string;
+  theme?: Theme;
 }
 
 export interface UserData {
@@ -25,5 +27,5 @@ export interface UserData {
   notificationsApp: boolean;
   notificationsInterviews: boolean;
   notificationsJobs: boolean;
-  theme: string;
+  theme: Theme;
 }

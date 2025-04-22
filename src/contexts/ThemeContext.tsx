@@ -1,8 +1,6 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-
-type Theme = 'dark' | 'light' | 'system';
+import { Theme } from '@/types/profile';
 
 interface ThemeContextType {
   theme: Theme;

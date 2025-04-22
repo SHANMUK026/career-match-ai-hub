@@ -1,11 +1,9 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense, useState } from "react";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import PageLoader from "@/components/common/PageLoader";
 
 // Core components - load immediately
@@ -33,11 +31,10 @@ const Settings = lazy(() => import("./pages/Settings"));
 const AIChatbot = lazy(() => import("./components/common/AIChatbot"));
 
 const App = () => {
-  // Create QueryClient instance with optimized settings
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
         retry: 1,
         refetchOnWindowFocus: false,
         refetchOnMount: true,
@@ -47,107 +44,105 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-right" closeButton richColors />
-          <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/contact" element={<Contact />} />
-                
-                {/* Public job routes */}
-                <Route path="/jobs" element={<Jobs />} />
-                <Route path="/jobs/:id" element={<JobDetail />} />
-                <Route path="/jobs/post" element={<JobApplicationPage />} />
-                <Route path="/job-application/:id" element={<JobApplicationPage />} />
-                <Route path="/employers" element={<Employers />} />
-                <Route path="/employers/profile" element={<Employers />} />
-                
-                {/* Protected routes - only accessible after login */}
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/profile" 
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/settings" 
-                  element={
-                    <ProtectedRoute>
-                      <Settings />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/assessments" 
-                  element={
-                    <ProtectedRoute>
-                      <Assessments />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/mock-interview" 
-                  element={
-                    <ProtectedRoute>
-                      <MockInterview />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/smart-interview" 
-                  element={
-                    <ProtectedRoute>
-                      <SmartMockInterview />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/video-interview/:id" 
-                  element={
-                    <ProtectedRoute>
-                      <VideoInterview />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/candidate-review" 
-                  element={
-                    <ProtectedRoute>
-                      <CandidateReview />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/payment" 
-                  element={
-                    <ProtectedRoute>
-                      <Payment />
-                    </ProtectedRoute>
-                  } 
-                />
-                {/* Catch-all route - place at the end */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <AIChatbot />
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-right" closeButton richColors />
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/contact" element={<Contact />} />
+              
+              {/* Public job routes */}
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/jobs/:id" element={<JobDetail />} />
+              <Route path="/jobs/post" element={<JobApplicationPage />} />
+              <Route path="/job-application/:id" element={<JobApplicationPage />} />
+              <Route path="/employers" element={<Employers />} />
+              <Route path="/employers/profile" element={<Employers />} />
+              
+              {/* Protected routes - only accessible after login */}
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/assessments" 
+                element={
+                  <ProtectedRoute>
+                    <Assessments />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mock-interview" 
+                element={
+                  <ProtectedRoute>
+                    <MockInterview />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/smart-interview" 
+                element={
+                  <ProtectedRoute>
+                    <SmartMockInterview />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/video-interview/:id" 
+                element={
+                  <ProtectedRoute>
+                    <VideoInterview />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/candidate-review" 
+                element={
+                  <ProtectedRoute>
+                    <CandidateReview />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/payment" 
+                element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* Catch-all route - place at the end */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <AIChatbot />
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };

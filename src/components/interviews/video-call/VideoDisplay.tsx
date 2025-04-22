@@ -21,6 +21,12 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isAI, setIsAI] = useState(false);
+  
+  // Determine if this is an AI interview based on the interviewerName
+  useEffect(() => {
+    setIsAI(interviewerName.toLowerCase().includes('ai'));
+  }, [interviewerName]);
   
   // Format elapsed time as mm:ss
   const formatTime = (seconds: number) => {
@@ -54,20 +60,21 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
     };
   }, [isConnecting, isVideoOff]);
   
-  // Simulate the AI interviewer speaking at intervals
+  // Simulate the interviewer speaking at intervals
   useEffect(() => {
     if (isConnecting) return;
     
+    // For AI, simulate random speaking patterns
+    // For human interviews, this would represent actual audio detection
     const speakingInterval = setInterval(() => {
-      const shouldSpeak = Math.random() > 0.7;
-      if (shouldSpeak) {
+      if (Math.random() > 0.6) {
         setIsSpeaking(true);
         
-        // Random speaking duration between 2-4 seconds
-        const speakDuration = Math.floor(Math.random() * 2000) + 2000;
+        // Random speaking duration between 2-5 seconds
+        const speakDuration = Math.floor(Math.random() * 3000) + 2000;
         setTimeout(() => setIsSpeaking(false), speakDuration);
       }
-    }, 5000);
+    }, 4000);
     
     return () => clearInterval(speakingInterval);
   }, [isConnecting]);
@@ -105,13 +112,27 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
               )}
             </div>
 
-            {/* Interviewer video (AI) */}
+            {/* Interviewer video (AI or Human) */}
             <div className="relative h-full rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
-              <div className="flex flex-col items-center justify-center">
-                <AIInterviewer isActive={true} isSpeaking={isSpeaking} size="lg" />
-              </div>
+              {isAI ? (
+                <div className="flex flex-col items-center justify-center">
+                  <AIInterviewer isActive={true} isSpeaking={isSpeaking} size="lg" />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-white">
+                  <div className="w-24 h-24 rounded-full bg-gray-700 mb-3 flex items-center justify-center">
+                    <User size={48} />
+                  </div>
+                  <p className="bg-black/30 px-4 py-1 rounded-full">
+                    {interviewerName}
+                    {isSpeaking && (
+                      <span className="inline-block ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    )}
+                  </p>
+                </div>
+              )}
               <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-md text-white text-sm">
-                {interviewerName || 'AI Interviewer'}
+                {interviewerName}
               </div>
             </div>
           </div>

@@ -15,8 +15,11 @@ import {
   ThumbsDown,
   Clock,
   Mic,
-  MessageSquare
+  MessageSquare,
+  Camera,
+  Video
 } from 'lucide-react';
+import VideoDisplay from '../video-call/VideoDisplay';
 import VoiceRecordingInterface from './VoiceRecordingInterface';
 
 interface InterviewQuestionProps {
@@ -29,6 +32,7 @@ interface InterviewQuestionProps {
   isTimerRunning: boolean;
   isAnswering: boolean;
   isVoiceMode: boolean;
+  isVideoMode: boolean;
   isRecording: boolean;
   userAnswer: string;
   showFeedback: boolean;
@@ -40,6 +44,7 @@ interface InterviewQuestionProps {
   onSkipQuestion: () => void;
   onEndInterview: () => void;
   onToggleVoiceMode: () => void;
+  onToggleVideoMode: () => void;
   onAudioRecorded: (audioBlob: Blob) => void;
   onRecordingStateChange: (isRecording: boolean) => void;
 }
@@ -54,6 +59,7 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   isTimerRunning,
   isAnswering,
   isVoiceMode,
+  isVideoMode,
   isRecording,
   userAnswer,
   showFeedback,
@@ -65,6 +71,7 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   onSkipQuestion,
   onEndInterview,
   onToggleVoiceMode,
+  onToggleVideoMode,
   onAudioRecorded,
   onRecordingStateChange
 }) => {
@@ -87,21 +94,41 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={onToggleVoiceMode}
+            onClick={onToggleVideoMode}
             className="flex items-center gap-1"
           >
-            {isVoiceMode ? (
+            {isVideoMode ? (
               <>
                 <MessageSquare size={14} />
                 Text Mode
               </>
             ) : (
               <>
-                <Mic size={14} />
-                Voice Mode
+                <Video size={14} />
+                Video Mode
               </>
             )}
           </Button>
+          {!isVideoMode && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onToggleVoiceMode}
+              className="flex items-center gap-1"
+            >
+              {isVoiceMode ? (
+                <>
+                  <MessageSquare size={14} />
+                  Text Mode
+                </>
+              ) : (
+                <>
+                  <Mic size={14} />
+                  Voice Mode
+                </>
+              )}
+            </Button>
+          )}
           <div className="flex items-center text-gray-500">
             <Clock size={16} className="mr-1" />
             <span>{formatTimer(timer)}</span>
@@ -120,7 +147,20 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
       )}
       
       <div className="mb-4">
-        {isVoiceMode ? (
+        {isVideoMode ? (
+          <div className="space-y-3">
+            <h3 className="block text-sm font-medium mb-2">Video Response</h3>
+            <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-3">
+              <VideoDisplay 
+                isConnecting={false}
+                isVideoOff={false}
+                isScreenSharing={false}
+                interviewerName="AI Interviewer"
+                elapsedTime={timer}
+              />
+            </div>
+          </div>
+        ) : isVoiceMode ? (
           <div className="space-y-3">
             <h3 className="block text-sm font-medium mb-2">Your Voice Response</h3>
             {isAnswering && (
@@ -170,12 +210,12 @@ const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
           {!isAnswering && !showFeedback ? (
             <Button onClick={onStartAnswering}>
               <Play className="mr-2" size={16} />
-              Start {isVoiceMode ? 'Recording' : 'Answering'}
+              Start {isVideoMode ? 'Recording' : isVoiceMode ? 'Recording' : 'Answering'}
             </Button>
           ) : !showFeedback ? (
             <Button onClick={onSubmitAnswer} className="bg-primary-gradient">
               <CheckCircle2 className="mr-2" size={16} />
-              Submit {isVoiceMode ? 'Recording' : 'Answer'}
+              Submit {isVideoMode ? 'Recording' : isVoiceMode ? 'Recording' : 'Answer'}
             </Button>
           ) : (
             <Button onClick={onMoveToNextQuestion} className="bg-primary-gradient">

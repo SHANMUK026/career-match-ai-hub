@@ -23,6 +23,11 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isAI, setIsAI] = useState(false);
   
+  // Determine face size based on AI interviewer size
+  const getFaceSize = () => {
+    return 'lg';
+  };
+  
   // Determine if this is an AI interview based on the interviewerName
   useEffect(() => {
     setIsAI(interviewerName.toLowerCase().includes('ai'));
@@ -116,7 +121,7 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
             <div className="relative h-full rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
               {isAI ? (
                 <div className="flex flex-col items-center justify-center">
-                  <AIInterviewer isActive={true} isSpeaking={isSpeaking} size="lg" />
+                  <AIInterviewer isActive={true} isSpeaking={isSpeaking} size={getFaceSize()} />
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center text-white">

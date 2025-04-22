@@ -1,6 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
-import { Avatar } from '@/components/ui/avatar';
+import React, { useEffect, useState, memo } from 'react';
 import { motion } from 'framer-motion';
 
 interface AIInterviewerProps {
@@ -9,138 +8,105 @@ interface AIInterviewerProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+// Dynamic face animation for AI interviewer
 const AIInterviewer: React.FC<AIInterviewerProps> = ({ 
   isActive = true, 
   isSpeaking = false,
   size = 'md'
 }) => {
-  const [blinkTimer, setBlinkTimer] = useState<number | null>(null);
-  const [isBlinking, setIsBlinking] = useState(false);
+  const [blink, setBlink] = useState(false);
+  const [talking, setTalking] = useState(false);
   
-  // Helper functions that use the size prop
-  const getAvatarSize = () => {
-    switch(size) {
-      case 'sm': return 'h-12 w-12';
-      case 'lg': return 'h-24 w-24';
-      default: return 'h-20 w-20';
-    }
-  };
-  
+  // Helper function to get face size based on prop
   const getFaceSize = () => {
     switch(size) {
-      case 'sm': return 'w-8 h-5';
-      case 'lg': return 'w-14 h-8';
-      default: return 'w-12 h-6';
+      case 'sm': return { face: 'w-8 h-8', eyes: 'w-1.5 h-1.5', mouth: 'w-3 h-1' };
+      case 'lg': return { face: 'w-16 h-16', eyes: 'w-2.5 h-2.5', mouth: 'w-5 h-1.5' };
+      default: return { face: 'w-12 h-12', eyes: 'w-2 h-2', mouth: 'w-4 h-1' };
     }
   };
-
-  const getEyeSize = () => {
-    switch(size) {
-      case 'sm': return 'w-1.5 h-1.5';
-      case 'lg': return 'w-3 h-3';
-      default: return 'w-2.5 h-2.5';
-    }
-  };
-
-  const getMouthSize = () => {
-    switch(size) {
-      case 'sm': return 'w-5 h-1';
-      case 'lg': return 'w-10 h-2';
-      default: return 'w-8 h-1.5';
-    }
-  };
-
-  const getStatusSize = () => {
-    switch(size) {
-      case 'sm': return 'h-2 w-2';
-      case 'lg': return 'h-4 w-4';
-      default: return 'h-3 w-3';
-    }
-  };
-
-  // Simulate random blinking
+  
+  // Random blinking effect - optimized with less frequent updates
   useEffect(() => {
     if (!isActive) return;
     
-    const scheduleNextBlink = () => {
-      const nextBlinkIn = Math.floor(Math.random() * 5000) + 2000;
-      
-      const timerId = window.setTimeout(() => {
-        setIsBlinking(true);
-        window.setTimeout(() => {
-          setIsBlinking(false);
-          scheduleNextBlink();
-        }, 200);
-      }, nextBlinkIn);
-      
-      setBlinkTimer(timerId);
-    };
+    const blinkInterval = setInterval(() => {
+      setBlink(true);
+      setTimeout(() => setBlink(false), 150);
+    }, Math.random() * 5000 + 3000); // Less frequent blinking
     
-    scheduleNextBlink();
-    
-    return () => {
-      if (blinkTimer) clearTimeout(blinkTimer);
-    };
+    return () => clearInterval(blinkInterval);
   }, [isActive]);
   
-  if (!isActive) {
-    return null;
-  }
+  // Talking animation based on isSpeaking prop
+  useEffect(() => {
+    if (!isActive) return;
+    
+    setTalking(isSpeaking);
+    
+    // Also add random mouth movements when speaking
+    if (isSpeaking) {
+      const talkingInterval = setInterval(() => {
+        setTalking(prev => !prev); // Create a more realistic talking animation
+      }, 150);
+      
+      return () => clearInterval(talkingInterval);
+    }
+  }, [isSpeaking, isActive]);
+  
+  const sizeClasses = getFaceSize();
   
   return (
     <motion.div 
-      className="flex flex-col items-center"
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      className={`rounded-full bg-gradient-to-r from-blue-500 to-purple-600 ${sizeClasses.face} flex items-center justify-center text-white font-bold text-xl`}
+      animate={{ scale: talking ? 1.05 : 1 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="relative mb-2">
-        <Avatar className={`${getAvatarSize()} border-2 border-primary`}>
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 h-full w-full flex items-center justify-center">
-            <span className="text-white text-2xl font-bold">AI</span>
-          </div>
-        </Avatar>
-        
-        {/* Face representation */}
-        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none">
-          <div className={`relative ${getFaceSize()}`}>
-            {/* Eyes */}
-            <div className="flex justify-between w-full">
-              <motion.div 
-                className={`${getEyeSize()} bg-white rounded-full`}
-                animate={{ scaleY: isBlinking ? 0.1 : 1 }}
-                transition={{ duration: 0.1 }}
-              />
-              <motion.div 
-                className={`${getEyeSize()} bg-white rounded-full`}
-                animate={{ scaleY: isBlinking ? 0.1 : 1 }}
-                transition={{ duration: 0.1 }}
-              />
-            </div>
-            
-            {/* Mouth */}
+      <div className="relative">
+        {/* Face */}
+        <div className="flex flex-col items-center">
+          {/* Eyes */}
+          <div className="flex space-x-2">
             <motion.div 
-              className={`${getMouthSize()} ${isSpeaking ? 'rounded-full' : 'rounded'} bg-white absolute bottom-0 left-1/2 transform -translate-x-1/2`}
-              animate={{ 
-                scaleY: isSpeaking ? 2 : 1,
-                scaleX: isSpeaking ? 0.8 : 1
-              }}
+              className={`${sizeClasses.eyes} bg-white rounded-full`}
+              animate={{ scaleY: blink ? 0.1 : 1 }}
+              transition={{ duration: 0.1 }}
+            />
+            <motion.div 
+              className={`${sizeClasses.eyes} bg-white rounded-full`}
+              animate={{ scaleY: blink ? 0.1 : 1 }}
               transition={{ duration: 0.1 }}
             />
           </div>
+          
+          {/* Mouth */}
+          <motion.div 
+            className={`${sizeClasses.mouth} bg-white rounded-full mt-1`}
+            animate={{ 
+              scaleY: talking ? Math.random() * 1.2 + 0.5 : 1,
+              scaleX: talking ? Math.random() * 0.3 + 0.8 : 1
+            }}
+            transition={{ duration: 0.1 }}
+          />
         </div>
         
-        {isSpeaking && (
-          <motion.span 
-            className={`absolute -bottom-1 right-0 ${getStatusSize()} bg-green-500 rounded-full`}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          />
-        )}
+        {/* Pulse effect for AI - optimized to be less resource intensive */}
+        <motion.div
+          className="absolute inset-0 rounded-full bg-white opacity-10"
+          animate={{
+            opacity: [0.05, 0.1, 0.05],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            repeatType: "loop",
+          }}
+        />
       </div>
-      <h3 className="font-medium text-sm">AI Interviewer</h3>
     </motion.div>
   );
 };
 
-export default AIInterviewer;
+// Using memo to prevent unnecessary re-renders
+export default memo(AIInterviewer);

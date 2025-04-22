@@ -6,9 +6,12 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: true, // Listen on all addresses
+    host: "0.0.0.0", // Listen on all addresses
     port: 8080,
     strictPort: false, // Allow fallback to another port if 8080 is taken
+    hmr: {
+      overlay: true, // Show errors as overlay
+    },
   },
   plugins: [
     react({
@@ -56,5 +59,9 @@ export default defineConfig(({ mode }) => ({
       '@radix-ui/react-toast',
       'lucide-react'
     ]
+  },
+  // Add better error reporting
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
 }));

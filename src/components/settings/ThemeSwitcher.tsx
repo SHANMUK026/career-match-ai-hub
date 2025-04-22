@@ -28,7 +28,7 @@ export const ThemeCard = ({ theme, label, icon, current, onClick }: ThemeCardPro
     >
       <div className={`h-24 w-full flex items-center justify-center ${
         theme === 'light' ? "bg-white text-black" : 
-        theme === 'dark' ? (isDark ? "bg-gray-800 text-white" : "bg-gray-900 text-white") : 
+        theme === 'dark' ? "bg-gray-800 text-white" : 
         "bg-gradient-to-r from-white to-gray-800 text-black"
       }`}>
         {icon}

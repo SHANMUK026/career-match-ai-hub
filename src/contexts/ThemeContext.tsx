@@ -25,9 +25,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   // Initialize with a safe default that won't cause render errors
   const [theme, setThemeState] = useState<Theme>('system');
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('light');
+  const [mounted, setMounted] = useState(false);
   
-  // Initialize theme from localStorage safely
+  // Initialize theme from localStorage safely when the component mounts
   useEffect(() => {
+    setMounted(true);
     try {
       const savedTheme = localStorage.getItem('theme') as Theme | null;
       if (savedTheme && ['dark', 'light', 'system'].includes(savedTheme)) {
@@ -50,6 +52,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   
   // Apply theme to document and determine resolved theme
   useEffect(() => {
+    if (!mounted) return;
+    
     try {
       const root = window.document.documentElement;
       
@@ -70,10 +74,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err) {
       console.error('Error applying theme to document:', err);
     }
-  }, [theme]);
+  }, [theme, mounted]);
 
   // Listen for system theme changes
   useEffect(() => {
+    if (!mounted) return;
+    
     try {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       
@@ -92,9 +98,14 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err) {
       console.error('Error setting up system theme listener:', err);
     }
-  }, [theme]);
+  }, [theme, mounted]);
 
   const isDark = resolvedTheme === 'dark';
+  
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme, isDark }}>

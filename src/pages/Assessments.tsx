@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -45,7 +44,6 @@ const Assessments = () => {
     progress?: number;
   }
   
-  // Sample assessment data
   const assessments: Assessment[] = [
     {
       id: 1,
@@ -181,7 +179,6 @@ const Assessments = () => {
       document.addEventListener("copy", handleCopyPaste);
       document.addEventListener("paste", handleCopyPaste);
 
-      // Set up the timer
       const initialTime = activeAssessment.durationMinutes * 60;
       setTimer(initialTime);
 
@@ -249,7 +246,6 @@ const Assessments = () => {
   };
 
   const handleSubmitAssessment = () => {
-    // In a real app, we would submit answers to the server here
     toast.success("Assessment submitted successfully!");
     setActiveAssessment(null);
   };
@@ -346,21 +342,6 @@ const Assessments = () => {
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">AI-Powered Skills Assessments</h1>
                 <p className="text-gray-600">Validate your skills and get matched with the perfect job opportunities</p>
-              </div>
-              
-              {/* Hero section */}
-              <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl p-8 mb-12">
-                <div className="max-w-3xl mx-auto">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4">Boost Your Hiring Chances!</h2>
-                  <p className="mb-6">Our AI-powered assessments help you showcase your skills to potential employers and increase your chances of landing your dream job.</p>
-                  <div className="flex items-center gap-3">
-                    <Button className="bg-white text-primary hover:bg-gray-100">Start an Assessment</Button>
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="h-5 w-5" />
-                      <span className="text-sm font-medium">Secure testing environment</span>
-                    </div>
-                  </div>
-                </div>
               </div>
               
               <Tabs defaultValue="tech">
@@ -514,7 +495,6 @@ const Assessments = () => {
                 </TabsContent>
               </Tabs>
               
-              {/* How it works */}
               <div className="my-12">
                 <h2 className="text-2xl font-semibold mb-6 text-center">How It Works</h2>
                 
@@ -599,7 +579,7 @@ const Assessments = () => {
               </div>
               
               {securityViolations > 0 && (
-                <Alert variant="warning" className="bg-yellow-50 border-yellow-200">
+                <Alert variant="destructive" className="bg-yellow-50 border-yellow-200">
                   <AlertTriangle className="h-4 w-4 text-yellow-600" />
                   <AlertTitle className="text-yellow-700">Security Alert</AlertTitle>
                   <AlertDescription className="text-yellow-700">

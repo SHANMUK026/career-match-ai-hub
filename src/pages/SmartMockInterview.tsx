@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -15,7 +14,9 @@ import {
   ShieldCheck,
   Camera,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  MessageSquare,
+  Mic
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -40,7 +41,6 @@ const SmartMockInterview = () => {
   const [securityEnabled, setSecurityEnabled] = useState<boolean>(true);
   const [windowFocusLost, setWindowFocusLost] = useState<number>(0);
 
-  // Check camera permissions
   useEffect(() => {
     const checkPermissions = async () => {
       try {
@@ -55,7 +55,6 @@ const SmartMockInterview = () => {
     checkPermissions();
   }, []);
 
-  // Monitor window focus for security
   useEffect(() => {
     if (interviewStarted && securityEnabled) {
       const handleVisibilityChange = () => {
@@ -185,7 +184,6 @@ const SmartMockInterview = () => {
     setIsRecording(false);
     setShowFeedback(true);
     
-    // Generate AI feedback (simplified for this example)
     const feedbackOptions = [
       "Great answer! You demonstrated a clear understanding of the concept. One suggestion would be to include more specific examples in your explanation.",
       "Good response. You covered the main points, but consider discussing potential trade-offs and limitations in future answers.",
@@ -208,7 +206,6 @@ const SmartMockInterview = () => {
       toast.success("Moving to next question.");
     } else {
       toast.success("Interview completed! Check your feedback.");
-      // In a real app, we would handle interview completion here
     }
   };
 
@@ -252,7 +249,6 @@ const SmartMockInterview = () => {
   };
 
   const handleAudioRecorded = (audioBlob: Blob) => {
-    // In a real application, we would handle the audio blob here
     console.log("Audio recorded:", audioBlob);
     toast.success("Audio recording saved");
   };
@@ -411,7 +407,7 @@ const SmartMockInterview = () => {
                   />
 
                   {securityEnabled && windowFocusLost > 0 && (
-                    <Alert variant="warning" className="bg-yellow-50 border-yellow-200">
+                    <Alert variant="destructive" className="bg-yellow-50 border-yellow-200">
                       <AlertTriangle className="h-4 w-4 text-yellow-600" />
                       <AlertTitle className="text-yellow-700">Security Alert</AlertTitle>
                       <AlertDescription className="text-yellow-700">

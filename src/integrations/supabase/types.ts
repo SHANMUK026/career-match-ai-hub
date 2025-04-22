@@ -16,6 +16,13 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          location: string | null
+          notifications_app: boolean | null
+          notifications_email: boolean | null
+          notifications_interviews: boolean | null
+          notifications_jobs: boolean | null
+          theme: string | null
+          title: string | null
           updated_at: string
         }
         Insert: {
@@ -24,6 +31,13 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          location?: string | null
+          notifications_app?: boolean | null
+          notifications_email?: boolean | null
+          notifications_interviews?: boolean | null
+          notifications_jobs?: boolean | null
+          theme?: string | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
@@ -32,6 +46,13 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          location?: string | null
+          notifications_app?: boolean | null
+          notifications_email?: boolean | null
+          notifications_interviews?: boolean | null
+          notifications_jobs?: boolean | null
+          theme?: string | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: []

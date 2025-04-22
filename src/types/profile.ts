@@ -8,9 +8,6 @@ export interface Profile {
   last_name: string | null;
   title?: string;
   location?: string;
-  bio?: string;
-  experience?: string;
-  education?: string;
   notifications_email?: boolean;
   notifications_app?: boolean;
   notifications_interviews?: boolean;
@@ -24,9 +21,6 @@ export interface UserData {
   email: string;
   title: string;
   location: string;
-  bio: string;
-  experience: string;
-  education: string;
   notificationsEmail: boolean;
   notificationsApp: boolean;
   notificationsInterviews: boolean;

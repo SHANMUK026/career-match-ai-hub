@@ -13,7 +13,6 @@ export const ThemeCard = ({ label }: { label: string }) => {
 };
 
 export const ThemeSwitcher = () => {
-  // Get theme functions from context
   const { theme, setTheme } = useTheme();
   
   return (
@@ -23,7 +22,7 @@ export const ThemeSwitcher = () => {
       <div className="flex flex-col sm:flex-row gap-3">
         <Button 
           variant={theme === 'light' ? 'default' : 'outline'}
-          className={`px-4 py-2 flex items-center justify-center ${theme === 'light' ? 'bg-blue-600 text-white' : ''}`}
+          className="px-4 py-2 flex items-center justify-center"
           onClick={() => setTheme('light')}
         >
           <Sun className="mr-2 h-4 w-4" />
@@ -32,7 +31,7 @@ export const ThemeSwitcher = () => {
         
         <Button 
           variant={theme === 'dark' ? 'default' : 'outline'}
-          className={`px-4 py-2 flex items-center justify-center ${theme === 'dark' ? 'bg-blue-600 text-white' : ''}`}
+          className="px-4 py-2 flex items-center justify-center"
           onClick={() => setTheme('dark')}
         >
           <Moon className="mr-2 h-4 w-4" />
@@ -41,7 +40,7 @@ export const ThemeSwitcher = () => {
         
         <Button 
           variant={theme === 'system' ? 'default' : 'outline'}
-          className={`px-4 py-2 flex items-center justify-center ${theme === 'system' ? 'bg-blue-600 text-white' : ''}`}
+          className="px-4 py-2 flex items-center justify-center"
           onClick={() => setTheme('system')}
         >
           <Monitor className="mr-2 h-4 w-4" />

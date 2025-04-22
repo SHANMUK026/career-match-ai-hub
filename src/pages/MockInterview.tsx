@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -10,11 +9,12 @@ import InterviewHistoryComponent from '@/components/interviews/mock/InterviewHis
 import InterviewTips from '@/components/interviews/mock/InterviewTips';
 import InterviewFeedback from '@/components/interviews/mock/InterviewFeedback';
 import { useMockInterview } from '@/components/interviews/mock/useMockInterview';
-import { Brain, ThumbsUp, Award, Star, AlertCircle } from 'lucide-react';
+import { Brain, ThumbsUp, Award, Star, AlertCircle, Video, MessageSquare } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AIInterviewHelper from '@/components/interviews/AIInterviewHelper';
 import VideoCall from '@/components/interviews/VideoCall';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const MockInterview = () => {
   const {
@@ -39,7 +39,6 @@ const MockInterview = () => {
   const [apiKeyExists, setApiKeyExists] = useState(false);
   const [useVideoMode, setUseVideoMode] = useState(false);
   
-  // Check if API key exists
   useEffect(() => {
     const savedApiKey = localStorage.getItem('interviewAIApiKey');
     setApiKeyExists(!!savedApiKey);
@@ -48,6 +47,15 @@ const MockInterview = () => {
   const handleEndVideoCall = () => {
     setUseVideoMode(false);
     finishWithFeedback();
+  };
+
+  const toggleVideoMode = () => {
+    if (!useVideoMode) {
+      toast.info("Switching to video interview mode");
+    } else {
+      toast.info("Switching to text interview mode");
+    }
+    setUseVideoMode(!useVideoMode);
   };
   
   return (
@@ -121,20 +129,35 @@ const MockInterview = () => {
                   onFinish={finishWithFeedback}
                 />
               ) : useVideoMode ? (
-                <div className="h-[70vh] mb-6">
-                  <VideoCall 
-                    interviewId="mock-interview" 
-                    interviewerName="AI Interviewer"
-                    onEnd={handleEndVideoCall}
-                  />
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">Video Interview Mode</h2>
+                    <Button 
+                      onClick={toggleVideoMode} 
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <MessageSquare size={16} />
+                      Switch to Text Mode
+                    </Button>
+                  </div>
+                
+                  <div className="h-[70vh] mb-6 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                    <VideoCall 
+                      interviewId="mock-interview" 
+                      interviewerName="AI Interviewer"
+                      onEnd={handleEndVideoCall}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <div className="flex justify-end mb-4">
                     <Button 
-                      onClick={() => setUseVideoMode(true)} 
-                      className="bg-primary-gradient"
+                      onClick={toggleVideoMode} 
+                      className="bg-primary-gradient flex items-center gap-2"
                     >
+                      <Video size={16} />
                       Switch to Video Interview
                     </Button>
                   </div>
@@ -171,7 +194,6 @@ const MockInterview = () => {
                     showFeedback={state.showFeedback}
                   />
 
-                  {/* Add AIInterviewHelper component to provide AI feedback when answering */}
                   {state.isAnswering && (
                     <AIInterviewHelper isActive={state.isVoiceMode} />
                   )}

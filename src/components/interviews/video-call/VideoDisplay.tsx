@@ -108,7 +108,7 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({
             {/* Interviewer video (AI) */}
             <div className="relative h-full rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
               <div className="flex flex-col items-center justify-center">
-                <AIInterviewer isActive={true} isSpeaking={isSpeaking} />
+                <AIInterviewer isActive={true} isSpeaking={isSpeaking} size="lg" />
               </div>
               <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-md text-white text-sm">
                 {interviewerName || 'AI Interviewer'}

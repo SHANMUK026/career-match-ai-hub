@@ -13,6 +13,8 @@ import { useMockInterview } from '@/components/interviews/mock/useMockInterview'
 import { Brain, ThumbsUp, Award, Star, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AIInterviewHelper from '@/components/interviews/AIInterviewHelper';
+import VideoCall from '@/components/interviews/VideoCall';
+import { Button } from '@/components/ui/button';
 
 const MockInterview = () => {
   const {
@@ -35,12 +37,18 @@ const MockInterview = () => {
   } = useMockInterview();
   
   const [apiKeyExists, setApiKeyExists] = useState(false);
+  const [useVideoMode, setUseVideoMode] = useState(false);
   
   // Check if API key exists
   useEffect(() => {
     const savedApiKey = localStorage.getItem('interviewAIApiKey');
     setApiKeyExists(!!savedApiKey);
   }, []);
+  
+  const handleEndVideoCall = () => {
+    setUseVideoMode(false);
+    finishWithFeedback();
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -56,10 +64,10 @@ const MockInterview = () => {
             <Alert variant="default" className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
               <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
               <div>
-                <h4 className="font-medium text-yellow-800 dark:text-yellow-300">AI Key Required</h4>
-                <p className="text-yellow-700 dark:text-yellow-400 text-sm">
+                <AlertTitle className="font-medium text-yellow-800 dark:text-yellow-300">AI Key Required</AlertTitle>
+                <AlertDescription className="text-yellow-700 dark:text-yellow-400 text-sm">
                   For the full AI interview experience, please add your API key in Interview AI Settings.
-                </p>
+                </AlertDescription>
               </div>
             </Alert>
           )}
@@ -112,8 +120,25 @@ const MockInterview = () => {
                   detailedFeedback={state.interviewFeedback || ''}
                   onFinish={finishWithFeedback}
                 />
+              ) : useVideoMode ? (
+                <div className="h-[70vh] mb-6">
+                  <VideoCall 
+                    interviewId="mock-interview" 
+                    interviewerName="AI Interviewer"
+                    onEnd={handleEndVideoCall}
+                  />
+                </div>
               ) : (
                 <div className="space-y-6">
+                  <div className="flex justify-end mb-4">
+                    <Button 
+                      onClick={() => setUseVideoMode(true)} 
+                      className="bg-primary-gradient"
+                    >
+                      Switch to Video Interview
+                    </Button>
+                  </div>
+                  
                   <InterviewQuestion
                     currentQuestionIndex={state.currentQuestionIndex}
                     totalQuestions={questions.length}

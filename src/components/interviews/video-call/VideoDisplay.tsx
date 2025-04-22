@@ -1,6 +1,8 @@
 
-import React from 'react';
-import { Camera, MonitorUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useRef } from 'react';
+import { User, MonitorX, Loader2, Clock } from 'lucide-react';
+import AIInterviewer from '../mock/AIInterviewer';
 
 interface VideoDisplayProps {
   isConnecting: boolean;
@@ -10,72 +12,117 @@ interface VideoDisplayProps {
   elapsedTime: number;
 }
 
-const VideoDisplay: React.FC<VideoDisplayProps> = ({ 
-  isConnecting, 
-  isVideoOff, 
-  isScreenSharing, 
+const VideoDisplay: React.FC<VideoDisplayProps> = ({
+  isConnecting,
+  isVideoOff,
+  isScreenSharing,
   interviewerName,
   elapsedTime
 }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  // Format elapsed time as mm:ss
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
-
+  
+  // Setup local video stream
+  useEffect(() => {
+    if (isConnecting || isVideoOff) return;
+    
+    const setupVideoStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (err) {
+        console.error("Failed to get user media:", err);
+      }
+    };
+    
+    setupVideoStream();
+    
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [isConnecting, isVideoOff]);
+  
+  // Simulate the AI interviewer speaking at intervals
+  useEffect(() => {
+    if (isConnecting) return;
+    
+    const speakingInterval = setInterval(() => {
+      const shouldSpeak = Math.random() > 0.7;
+      if (shouldSpeak) {
+        setIsSpeaking(true);
+        
+        // Random speaking duration between 2-4 seconds
+        const speakDuration = Math.floor(Math.random() * 2000) + 2000;
+        setTimeout(() => setIsSpeaking(false), speakDuration);
+      }
+    }, 5000);
+    
+    return () => clearInterval(speakingInterval);
+  }, [isConnecting]);
+  
   return (
-    <div className="flex-grow relative bg-black rounded-lg overflow-hidden">
-      {/* Main video screen */}
-      <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-full bg-gray-900 rounded-lg overflow-hidden relative">
+      <div className="h-[60vh]">
         {isConnecting ? (
-          <div className="text-center text-white">
-            <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-lg font-medium">Connecting to interview...</p>
-            <p className="text-sm opacity-80">Please wait</p>
+          <div className="h-full w-full flex flex-col items-center justify-center bg-gray-900 text-white">
+            <Loader2 size={48} className="animate-spin mb-4" />
+            <p className="text-lg">Connecting to interview room...</p>
           </div>
-        ) : isVideoOff ? (
-          <div className="text-center text-white">
-            <div className="w-20 h-20 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center mx-auto mb-2">
-              <span className="text-2xl font-semibold">{interviewerName.charAt(0)}</span>
+        ) : (
+          <div className="h-full w-full grid md:grid-cols-2 gap-4 p-4">
+            {/* User video */}
+            <div className="relative h-full rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center bg-gray-800">
+              {isVideoOff ? (
+                <div className="flex flex-col items-center justify-center text-gray-400">
+                  <User size={64} className="mb-2" />
+                  <p>Your camera is off</p>
+                </div>
+              ) : (
+                <>
+                  <video 
+                    ref={videoRef}
+                    autoPlay 
+                    muted 
+                    playsInline 
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-md text-white text-sm">
+                    You
+                  </div>
+                </>
+              )}
             </div>
-            <p className="text-lg">{interviewerName}</p>
+
+            {/* Interviewer video (AI) */}
+            <div className="relative h-full rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
+              <div className="flex flex-col items-center justify-center">
+                <AIInterviewer isActive={true} isSpeaking={isSpeaking} />
+              </div>
+              <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-md text-white text-sm">
+                {interviewerName || 'AI Interviewer'}
+              </div>
+            </div>
           </div>
-        ) : (
-          <img 
-            src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-            alt="Interviewer" 
-            className="w-full h-full object-cover"
-          />
         )}
       </div>
       
-      {/* Self view */}
-      <div className="absolute bottom-4 right-4 w-48 h-36 bg-gray-900 rounded-lg overflow-hidden border-2 border-gray-700 shadow-lg">
-        {isVideoOff ? (
-          <div className="h-full flex items-center justify-center bg-gray-800 text-white">
-            <Camera className="h-8 w-8 text-gray-400" />
-          </div>
-        ) : (
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-            alt="Self view" 
-            className="w-full h-full object-cover"
-          />
-        )}
+      {/* Call information overlay */}
+      <div className="absolute top-4 right-4 bg-black/60 text-white px-4 py-2 rounded-full flex items-center">
+        <Clock className="h-4 w-4 mr-2" />
+        <span>{formatTime(elapsedTime)}</span>
       </div>
-      
-      {/* Call duration */}
-      <div className="absolute top-4 left-4 bg-black/50 text-white py-1 px-3 rounded-full text-sm">
-        {formatTime(elapsedTime)}
-      </div>
-      
-      {/* Screen sharing indicator */}
-      {isScreenSharing && (
-        <div className="absolute top-4 right-4 bg-red-500 text-white py-1 px-3 rounded-full text-sm flex items-center">
-          <MonitorUp className="w-3 h-3 mr-1" />
-          Sharing screen
-        </div>
-      )}
     </div>
   );
 };

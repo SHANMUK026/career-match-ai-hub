@@ -1,1 +1,5 @@
+
 project_id = "tcvlzigenarahcxvzmuk"
+
+[functions.update_profile_theme]
+verify_jwt = true

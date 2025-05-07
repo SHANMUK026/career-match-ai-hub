@@ -16,6 +16,10 @@ export const ThemeCard = ({ label }: { label: string }) => {
 export const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
   
+  // Validate theme to prevent potential XSS vulnerabilities
+  const validThemes: Theme[] = ['light', 'dark', 'system'];
+  const displayTheme = validThemes.includes(theme) ? theme : 'system';
+  
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Theme Settings</h3>
@@ -50,7 +54,7 @@ export const ThemeSwitcher = () => {
       </div>
       
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-        Current theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}
+        Current theme: {displayTheme.charAt(0).toUpperCase() + displayTheme.slice(1)}
       </p>
     </div>
   );

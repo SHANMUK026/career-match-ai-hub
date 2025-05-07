@@ -13,46 +13,56 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    // Check for an existing session
+    // Set up auth state listener for real-time auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setLoading(false);
+        setAuthChecked(true);
+      }
+    );
+
+    // Initial session check
     const checkSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
+          toast.error("Authentication error: " + error.message);
         }
         setSession(data.session);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error in session check:', error);
+        toast.error("Authentication system error");
       } finally {
         setLoading(false);
+        setAuthChecked(true);
       }
     };
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setLoading(false);
-      }
-    );
-
     checkSession();
 
-    // Cleanup
+    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
   if (loading) {
-    // You might want to add a loading spinner or skeleton here
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <span className="ml-3 text-lg">Verifying authentication...</span>
+      </div>
+    );
   }
 
-  if (!session) {
+  if (!session && authChecked) {
     toast.error("Please log in to access this page");
+    // Store the intended destination for after login
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 

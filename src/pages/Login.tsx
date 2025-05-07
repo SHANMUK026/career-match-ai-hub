@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -14,9 +13,12 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { supabase } from '@/integrations/supabase/client';
 
+// Form schema with validation
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  email: z.string().email({ message: "Please enter a valid email address" })
+    .max(255, { message: "Email is too long" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" })
+    .max(100, { message: "Password is too long" }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -25,6 +27,7 @@ const Login = () => {
   const location = useLocation();
   const from = location.state?.from || '/payment';
   const [isLoading, setIsLoading] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,21 +40,37 @@ const Login = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // Implement rate limiting for login attempts
+      if (loginAttempts >= 5) {
+        toast.error("Too many login attempts. Please try again later.");
+        return;
+      }
+      
       setIsLoading(true);
+      setLoginAttempts(prev => prev + 1);
+      
+      // Safely sanitize inputs
+      const sanitizedEmail = values.email.trim().toLowerCase();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
+        email: sanitizedEmail,
         password: values.password,
       });
 
       if (error) {
-        toast.error(error.message);
+        // Generic error message to prevent user enumeration
+        toast.error("Login failed. Please check your credentials and try again.");
+        console.error("Auth error:", error.message);
         return;
       }
 
       toast.success("Login successful");
+      
+      // Redirect to the intended destination or fallback
       navigate(from);
     } catch (error: any) {
-      toast.error(error.message || "Failed to log in");
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +101,7 @@ const Login = () => {
                           placeholder="you@example.com" 
                           className="pl-10" 
                           {...field} 
+                          autoComplete="email"
                         />
                       </FormControl>
                     </div>
@@ -103,7 +123,8 @@ const Login = () => {
                           type="password" 
                           placeholder="••••••••" 
                           className="pl-10" 
-                          {...field} 
+                          {...field}
+                          autoComplete="current-password"
                         />
                       </FormControl>
                     </div>

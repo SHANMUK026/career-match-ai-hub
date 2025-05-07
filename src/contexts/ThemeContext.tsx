@@ -29,6 +29,7 @@ const getInitialTheme = (): Theme => {
   if (typeof window !== 'undefined') {
     try {
       const savedTheme = localStorage.getItem('theme');
+      // Validate the theme to ensure it's one of the allowed values
       if (savedTheme && ['dark', 'light', 'system'].includes(savedTheme)) {
         initialTheme = savedTheme as Theme;
       }
@@ -64,18 +65,32 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     setMounted(true);
   }, []);
 
-  // Theme change handler
+  // Theme change handler with sanitization
   const setTheme = (newTheme: Theme) => {
     try {
+      // Validate theme before setting
+      if (!['dark', 'light', 'system'].includes(newTheme)) {
+        console.error('Invalid theme provided:', newTheme);
+        toast.error("Invalid theme selection");
+        return;
+      }
+      
       console.log("Setting theme to:", newTheme);
       setThemeState(newTheme);
-      localStorage.setItem('theme', newTheme);
+      
+      // Use try-catch for localStorage operations
+      try {
+        localStorage.setItem('theme', newTheme);
+      } catch (storageErr) {
+        console.error('Error saving theme to localStorage:', storageErr);
+      }
       
       if (mounted) {
         toast.success(`Theme changed to ${newTheme}`);
       }
     } catch (err) {
-      console.error('Error saving theme preference:', err);
+      console.error('Error setting theme preference:', err);
+      toast.error("Failed to change theme");
     }
   };
   

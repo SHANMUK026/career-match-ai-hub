@@ -38,6 +38,15 @@ serve(async (req) => {
       );
     }
 
+    // Validate JWT token
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authorization token' }),
+        { status: 401, headers: corsHeaders }
+      );
+    }
+
     // Parse request body
     const requestData = await req.json();
     
@@ -45,6 +54,15 @@ serve(async (req) => {
     if (!requestData || typeof requestData !== 'object') {
       return new Response(
         JSON.stringify({ error: 'Invalid request data' }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Enhanced input validation for theme setting
+    const { theme } = requestData;
+    if (theme && !['light', 'dark', 'system'].includes(theme)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid theme value' }),
         { status: 400, headers: corsHeaders }
       );
     }

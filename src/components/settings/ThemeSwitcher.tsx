@@ -18,7 +18,12 @@ export const ThemeSwitcher = () => {
   
   // Validate theme to prevent potential XSS vulnerabilities
   const validThemes: Theme[] = ['light', 'dark', 'system'];
-  const displayTheme = validThemes.includes(theme) ? theme : 'system';
+  const safeTheme: Theme = validThemes.includes(theme as Theme) 
+    ? theme as Theme 
+    : 'system';
+  
+  // Further sanitize for display
+  const displayTheme = safeTheme.charAt(0).toUpperCase() + safeTheme.slice(1);
   
   return (
     <div className="space-y-4">
@@ -26,7 +31,7 @@ export const ThemeSwitcher = () => {
       
       <div className="flex flex-col sm:flex-row gap-3">
         <Button 
-          variant={theme === 'light' ? 'default' : 'outline'}
+          variant={safeTheme === 'light' ? 'default' : 'outline'}
           className="px-4 py-2 flex items-center justify-center"
           onClick={() => setTheme('light')}
         >
@@ -35,7 +40,7 @@ export const ThemeSwitcher = () => {
         </Button>
         
         <Button 
-          variant={theme === 'dark' ? 'default' : 'outline'}
+          variant={safeTheme === 'dark' ? 'default' : 'outline'}
           className="px-4 py-2 flex items-center justify-center"
           onClick={() => setTheme('dark')}
         >
@@ -44,7 +49,7 @@ export const ThemeSwitcher = () => {
         </Button>
         
         <Button 
-          variant={theme === 'system' ? 'default' : 'outline'}
+          variant={safeTheme === 'system' ? 'default' : 'outline'}
           className="px-4 py-2 flex items-center justify-center"
           onClick={() => setTheme('system')}
         >
@@ -54,7 +59,7 @@ export const ThemeSwitcher = () => {
       </div>
       
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-        Current theme: {displayTheme.charAt(0).toUpperCase() + displayTheme.slice(1)}
+        Current theme: {displayTheme}
       </p>
     </div>
   );

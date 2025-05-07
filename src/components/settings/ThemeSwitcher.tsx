@@ -49,7 +49,7 @@ export const ThemeSwitcher = () => {
         </Button>
       </div>
       
-      <p className="text-sm text-gray-500 mt-2">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
         Current theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}
       </p>
     </div>

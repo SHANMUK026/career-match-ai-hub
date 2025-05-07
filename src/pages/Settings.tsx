@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { User, Save, Upload, AlertCircle, X } from 'lucide-react';
@@ -11,7 +9,6 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SettingsSidebar } from '@/components/settings/SettingsSidebar';
 import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';

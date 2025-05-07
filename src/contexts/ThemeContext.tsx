@@ -28,9 +28,9 @@ const getInitialTheme = (): Theme => {
   // Only try to access localStorage when in browser
   if (typeof window !== 'undefined') {
     try {
-      const savedTheme = localStorage.getItem('theme') as Theme | null;
+      const savedTheme = localStorage.getItem('theme');
       if (savedTheme && ['dark', 'light', 'system'].includes(savedTheme)) {
-        initialTheme = savedTheme;
+        initialTheme = savedTheme as Theme;
       }
     } catch (e) {
       console.error('Failed to get theme from localStorage:', e);

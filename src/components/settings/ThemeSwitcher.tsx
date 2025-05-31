@@ -23,7 +23,17 @@ export const ThemeSwitcher = () => {
     : 'system';
   
   // Further sanitize for display
-  const displayTheme = safeTheme.charAt(0).toUpperCase() + safeTheme.slice(1);
+  const displayTheme = safeTheme.replace(/[<>]/g, '').charAt(0).toUpperCase() + safeTheme.slice(1);
+  
+  const handleThemeChange = (newTheme: Theme) => {
+    // Validate the theme before setting it
+    if (validThemes.includes(newTheme)) {
+      console.log('Changing theme to:', newTheme);
+      setTheme(newTheme);
+    } else {
+      console.error('Invalid theme attempted:', newTheme);
+    }
+  };
   
   return (
     <div className="space-y-4">
@@ -33,7 +43,7 @@ export const ThemeSwitcher = () => {
         <Button 
           variant={safeTheme === 'light' ? 'default' : 'outline'}
           className="px-4 py-2 flex items-center justify-center"
-          onClick={() => setTheme('light')}
+          onClick={() => handleThemeChange('light')}
         >
           <Sun className="mr-2 h-4 w-4" />
           Light Mode
@@ -42,7 +52,7 @@ export const ThemeSwitcher = () => {
         <Button 
           variant={safeTheme === 'dark' ? 'default' : 'outline'}
           className="px-4 py-2 flex items-center justify-center"
-          onClick={() => setTheme('dark')}
+          onClick={() => handleThemeChange('dark')}
         >
           <Moon className="mr-2 h-4 w-4" />
           Dark Mode
@@ -51,7 +61,7 @@ export const ThemeSwitcher = () => {
         <Button 
           variant={safeTheme === 'system' ? 'default' : 'outline'}
           className="px-4 py-2 flex items-center justify-center"
-          onClick={() => setTheme('system')}
+          onClick={() => handleThemeChange('system')}
         >
           <Monitor className="mr-2 h-4 w-4" />
           System Preference

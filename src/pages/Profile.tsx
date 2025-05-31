@@ -13,11 +13,11 @@ import { useNavigate } from 'react-router-dom';
 const Profile = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
-    firstName: 'Thomas',
-    lastName: 'Anderson',
+    firstName: '',
+    lastName: '',
     title: 'Senior Software Engineer',
     location: 'San Francisco, CA',
-    email: 'thomas@example.com',
+    email: '',
     bio: 'Passionate software engineer with 8+ years of experience in full-stack development. Skilled in React, Node.js, and cloud technologies. Always eager to learn and tackle new challenges.',
     experience: '8',
     education: 'M.S. Computer Science',
@@ -32,10 +32,12 @@ const Profile = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
+          console.log('No session found, redirecting to login');
           navigate('/login');
           return;
         }
         
+        console.log('Fetching profile for user:', session.user.id);
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -44,21 +46,47 @@ const Profile = () => {
         
         if (error) {
           console.error('Error fetching profile:', error);
+          // If profile doesn't exist, create one
+          if (error.code === 'PGRST116') {
+            console.log('Profile not found, creating new profile');
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert([
+                {
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  first_name: '',
+                  last_name: ''
+                }
+              ]);
+            
+            if (insertError) {
+              console.error('Error creating profile:', insertError);
+              toast.error("Failed to create profile");
+            } else {
+              toast.success("Profile created successfully");
+            }
+          } else {
+            toast.error("Failed to load profile data");
+          }
           return;
         }
         
         if (data) {
+          console.log('Profile data loaded:', data);
           // Map database fields to our state
           setProfile(prevProfile => ({
             ...prevProfile,
-            firstName: data.first_name || prevProfile.firstName,
-            lastName: data.last_name || prevProfile.lastName,
-            email: session.user.email || prevProfile.email,
-            // Add other fields from your database
+            firstName: data.first_name || '',
+            lastName: data.last_name || '',
+            email: session.user.email || '',
+            title: data.title || prevProfile.title,
+            location: data.location || prevProfile.location,
           }));
         }
       } catch (error) {
         console.error('Profile fetch error:', error);
+        toast.error("An error occurred while loading your profile");
       } finally {
         setIsLoading(false);
       }
@@ -74,31 +102,38 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-24 h-24 bg-gray-200 rounded-full mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-48 mb-2"></div>
-          <div className="h-3 bg-gray-200 rounded w-32"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="animate-pulse flex flex-col items-center space-y-4">
+          <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 py-12">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="mb-8 animate-fade-in">
-          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 overflow-hidden">
+          <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl border-0 overflow-hidden">
             <div className="h-32 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
             <div className="px-8 pb-8 relative">
               <div className="-mt-16 flex flex-col md:flex-row items-start md:items-end gap-6">
                 <Avatar className="w-28 h-28 border-4 border-white shadow-lg">
-                  <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.firstName} ${profile.lastName}`} alt={`${profile.firstName} ${profile.lastName}`} />
-                  <AvatarFallback className="text-3xl bg-primary text-white">{profile.firstName?.charAt(0)}{profile.lastName?.charAt(0)}</AvatarFallback>
+                  <AvatarImage 
+                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.firstName} ${profile.lastName}`} 
+                    alt={`${profile.firstName} ${profile.lastName}`} 
+                  />
+                  <AvatarFallback className="text-3xl bg-primary text-white">
+                    {profile.firstName?.charAt(0) || 'U'}{profile.lastName?.charAt(0) || 'U'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-gray-800">{profile.firstName} {profile.lastName}</h1>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1 text-gray-600">
+                  <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                    {profile.firstName || profile.lastName ? `${profile.firstName} ${profile.lastName}` : 'User Profile'}
+                  </h1>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1 text-gray-600 dark:text-gray-400">
                     <div className="flex items-center">
                       <Briefcase className="h-4 w-4 mr-1 text-primary" />
                       <span>{profile.title}</span>

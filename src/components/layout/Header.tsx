@@ -220,44 +220,47 @@ const Header = () => {
         {/* Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
           {session ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative rounded-full h-10 w-10 p-0 overflow-hidden border border-gray-200 hover:bg-gray-100 hover:text-primary">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage 
-                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${getInitials()}`} 
-                      alt="Profile" 
-                    />
-                    <AvatarFallback className="bg-primary text-white">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 animate-fade-in">
-                <DropdownMenuLabel>
-                  {profileData?.firstName ? `${profileData.firstName} ${profileData.lastName || ''}` : 'My Account'}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleDashboard} className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleProfile} className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSettings} className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center space-x-3">
+              <NotificationCenter />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative rounded-full h-10 w-10 p-0 overflow-hidden border border-gray-200 hover:bg-gray-100 hover:text-primary">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage 
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${getInitials()}`} 
+                        alt="Profile" 
+                      />
+                      <AvatarFallback className="bg-primary text-white">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 animate-fade-in">
+                  <DropdownMenuLabel>
+                    {profileData?.firstName ? `${profileData.firstName} ${profileData.lastName || ''}` : 'My Account'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleDashboard} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Dashboard</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleProfile} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSettings} className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <>
               <Button 
@@ -280,19 +283,22 @@ const Header = () => {
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center space-x-2">
           {session && (
-            <Button 
-              variant="ghost" 
-              className="relative rounded-full h-9 w-9 p-0 overflow-hidden mr-1"
-              onClick={handleProfile}
-            >
-              <Avatar className="h-9 w-9">
-                <AvatarImage 
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${getInitials()}`} 
-                  alt="Profile" 
-                />
-                <AvatarFallback className="bg-primary text-white">{getInitials()}</AvatarFallback>
-              </Avatar>
-            </Button>
+            <>
+              <NotificationCenter />
+              <Button 
+                variant="ghost" 
+                className="relative rounded-full h-9 w-9 p-0 overflow-hidden mr-1"
+                onClick={handleProfile}
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage 
+                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${getInitials()}`} 
+                    alt="Profile" 
+                  />
+                  <AvatarFallback className="bg-primary text-white">{getInitials()}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </>
           )}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}

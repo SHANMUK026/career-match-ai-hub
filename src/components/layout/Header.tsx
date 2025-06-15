@@ -1,13 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, User, ChevronDown, Settings } from 'lucide-react';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { Session } from '@supabase/supabase-js';
-import { NotificationCenter } from '@/components/notifications/NotificationCenter';
-import { 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -15,403 +13,355 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  User, 
+  Settings, 
+  LogOut, 
+  Briefcase, 
+  Search,
+  Menu,
+  X,
+  Home,
+  FileText,
+  MessageSquare,
+  Calendar,
+  TrendingUp
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [profileData, setProfileData] = useState<{ firstName?: string; lastName?: string } | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
-  useEffect(() => {
-    // Close mobile menu on navigation
-    setIsMenuOpen(false);
-    // Close dropdown on navigation
-    setIsDropdownOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        
-        if (session?.user?.id) {
-          const { data } = await supabase
-            .from('profiles')
-            .select('first_name, last_name')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (data) {
-            setProfileData({ 
-              firstName: data.first_name,
-              lastName: data.last_name
-            });
-          }
-        } else {
-          setProfileData(null);
-        }
-      }
-    );
-
-    // Check for an existing session
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      
-      if (data.session?.user?.id) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('id', data.session.user.id)
-          .single();
-          
-        if (profileData) {
-          setProfileData({ 
-            firstName: profileData.first_name,
-            lastName: profileData.last_name
-          });
-        }
-      }
-    };
-
-    checkSession();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogin = () => {
-    navigate('/login');
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    navigate('/');
   };
 
-  const handleSignUp = () => {
-    navigate('/signup');
-  };
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-      
-      toast.success("Logged out successfully");
-      navigate('/');
-    } catch (error: any) {
-      toast.error(error.message || "Failed to log out");
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
-  const handleDashboard = () => {
-    navigate('/dashboard');
-  };
-
-  const handleProfile = () => {
-    navigate('/profile');
-  };
-
-  const handleSettings = () => {
-    navigate('/settings');
-  };
-
-  const isActive = (path: string) => {
-    if (path === '/' && location.pathname === '/') return true;
-    if (path !== '/' && location.pathname.startsWith(path)) return true;
-    return false;
-  };
-
-  const getInitials = () => {
-    if (profileData?.firstName && profileData?.lastName) {
-      return `${profileData.firstName.charAt(0)}${profileData.lastName.charAt(0)}`;
+  const navigationItems = [
+    { 
+      title: 'Dashboard', 
+      href: '/dashboard', 
+      icon: <Home className="h-4 w-4" />,
+      description: 'Your personal job search hub'
+    },
+    { 
+      title: 'Jobs', 
+      href: '/jobs', 
+      icon: <Briefcase className="h-4 w-4" />,
+      description: 'Browse available positions'
+    },
+    { 
+      title: 'Interviews', 
+      href: '/mock-interview', 
+      icon: <MessageSquare className="h-4 w-4" />,
+      description: 'Practice with AI interviews'
+    },
+    { 
+      title: 'Assessments', 
+      href: '/assessments', 
+      icon: <FileText className="h-4 w-4" />,
+      description: 'Take skill assessments'
+    },
+    { 
+      title: 'Profile', 
+      href: '/profile', 
+      icon: <User className="h-4 w-4" />,
+      description: 'Manage your profile'
     }
-    return "U";
-  };
+  ];
+
+  const quickSearchSuggestions = [
+    'Frontend Developer',
+    'React Developer',
+    'Full Stack Engineer',
+    'UI/UX Designer',
+    'Product Manager'
+  ];
 
   return (
-    <header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white shadow-md py-2' 
-          : 'bg-white bg-opacity-95 backdrop-blur-sm py-4'
-      }`}
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700"
     >
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex items-center">
-          <Link 
-            to="/" 
-            className="text-2xl font-poppins font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600"
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            CareerMatchAI
-          </Link>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className={`transition-all hover:text-primary ${isActive('/') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-            Home
-          </Link>
-          <Link to="/jobs" className={`transition-all hover:text-primary ${isActive('/jobs') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-            Jobs
-          </Link>
-          <div className="relative">
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`flex items-center transition-all hover:text-primary ${
-                isActive('/assessments') || isActive('/mock-interview') || isActive('/smart-interview') 
-                  ? 'text-primary font-medium' 
-                  : 'text-gray-600'
-              }`}
-            >
-              Assessments <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 animate-fade-in">
-                <div className="py-1">
-                  <Link 
-                    to="/assessments" 
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    All Assessments
-                  </Link>
-                  <Link 
-                    to="/mock-interview" 
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Mock Interviews
-                  </Link>
-                  <Link 
-                    to="/smart-interview" 
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Smart AI Interviews
-                  </Link>
-                </div>
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">JH</span>
               </div>
-            )}
-          </div>
-          <Link to="/employers" className={`transition-all hover:text-primary ${isActive('/employers') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-            Employers
-          </Link>
-          <Link to="/contact" className={`transition-all hover:text-primary ${isActive('/contact') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-            Contact
-          </Link>
-        </nav>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                JobHunt
+              </span>
+            </Link>
+          </motion.div>
 
-        {/* Auth Buttons - Desktop */}
-        <div className="hidden md:flex items-center space-x-4">
-          {session ? (
-            <div className="flex items-center space-x-3">
+          {/* Search Bar - Desktop */}
+          <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
+            <form onSubmit={handleSearch} className="w-full relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  type="search"
+                  placeholder="Search jobs, companies, or skills..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                  className="pl-10 pr-4 w-full bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-900 transition-colors"
+                />
+              </div>
+              
+              {/* Search Suggestions */}
+              <AnimatePresence>
+                {isSearchFocused && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50"
+                  >
+                    <div className="p-2">
+                      <p className="text-xs text-gray-500 mb-2 px-2">Quick searches</p>
+                      {quickSearchSuggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                          onClick={() => {
+                            setSearchQuery(suggestion);
+                            navigate(`/jobs?search=${encodeURIComponent(suggestion)}`);
+                          }}
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </form>
+          </div>
+
+          {/* Desktop Navigation */}
+          {isLoggedIn ? (
+            <div className="hidden lg:flex items-center space-x-4">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Browse
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="grid gap-3 p-6 w-[400px]">
+                        {navigationItems.slice(1, 4).map((item) => (
+                          <NavigationMenuLink
+                            key={item.href}
+                            asChild
+                          >
+                            <Link
+                              to={item.href}
+                              className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                              <div className="p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                                {item.icon}
+                              </div>
+                              <div>
+                                <h3 className="font-medium">{item.title}</h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {item.description}
+                                </p>
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                        ))}
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm" className="relative">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+              </Link>
+
               <NotificationCenter />
+              <ThemeSwitcher />
+
+              {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative rounded-full h-10 w-10 p-0 overflow-hidden border border-gray-200 hover:bg-gray-100 hover:text-primary">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage 
-                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${getInitials()}`} 
-                        alt="Profile" 
-                      />
-                      <AvatarFallback className="bg-primary text-white">
-                        {getInitials()}
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/placeholder.svg" alt="Profile" />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                        JD
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 animate-fade-in">
+                <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                   <DropdownMenuLabel>
-                    {profileData?.firstName ? `${profileData.firstName} ${profileData.lastName || ''}` : 'My Account'}
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">John Doe</p>
+                      <p className="text-xs text-gray-500">john@example.com</p>
+                    </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleDashboard} className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleProfile} className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSettings} className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600">
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           ) : (
-            <>
-              <Button 
-                variant="outline" 
-                className="rounded-md border-primary text-primary hover:bg-primary/5 transition-all duration-300" 
-                onClick={handleLogin}
-              >
-                Login
+            <div className="hidden md:flex items-center space-x-4">
+              <ThemeSwitcher />
+              <Button variant="ghost" asChild>
+                <Link to="/login">Sign In</Link>
               </Button>
-              <Button 
-                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 text-white rounded-md shadow-md hover:shadow-lg transition-all duration-300" 
-                onClick={handleSignUp}
-              >
-                Sign Up
+              <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Link to="/signup">Get Started</Link>
               </Button>
-            </>
+            </div>
           )}
-        </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center space-x-2">
-          {session && (
-            <>
-              <NotificationCenter />
-              <Button 
-                variant="ghost" 
-                className="relative rounded-full h-9 w-9 p-0 overflow-hidden mr-1"
-                onClick={handleProfile}
-              >
-                <Avatar className="h-9 w-9">
-                  <AvatarImage 
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${getInitials()}`} 
-                    alt="Profile" 
-                  />
-                  <AvatarFallback className="bg-primary text-white">{getInitials()}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </>
-          )}
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gray-700 p-1 rounded-md hover:bg-gray-100"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg animate-in fade-in slide-in-from-top-5 duration-300">
-          <div className="container mx-auto px-4 py-4 flex flex-col">
-            <nav className="flex flex-col space-y-4 mb-6">
-              <Link to="/" className={`py-2 ${isActive('/') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                Home
-              </Link>
-              <Link to="/jobs" className={`py-2 ${isActive('/jobs') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                Jobs
-              </Link>
-              
-              <div>
-                <button 
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className={`flex items-center w-full py-2 justify-between ${
-                    isActive('/assessments') || isActive('/mock-interview') || isActive('/smart-interview') 
-                      ? 'text-primary font-medium' 
-                      : 'text-gray-600'
-                  }`}
-                >
-                  Assessments <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {isDropdownOpen && (
-                  <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
-                    <Link 
-                      to="/assessments" 
-                      className="block py-2 text-sm text-gray-700"
+        {/* Mobile Search */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4"
+            >
+              <form onSubmit={handleSearch} className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    type="search"
+                    placeholder="Search jobs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-gray-50 dark:bg-gray-800"
+                  />
+                </div>
+              </form>
+
+              {/* Mobile Navigation */}
+              <div className="space-y-2">
+                {isLoggedIn ? (
+                  <>
+                    {navigationItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </Link>
+                    ))}
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                      <Link
+                        to="/settings"
+                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <Settings className="h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-red-600 w-full text-left"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Log out</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                      All Assessments
+                      Sign In
                     </Link>
-                    <Link 
-                      to="/mock-interview" 
-                      className="block py-2 text-sm text-gray-700"
+                    <Link
+                      to="/signup"
+                      className="block px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center"
                     >
-                      Mock Interviews
+                      Get Started
                     </Link>
-                    <Link 
-                      to="/smart-interview" 
-                      className="block py-2 text-sm text-gray-700"
-                    >
-                      Smart AI Interviews
-                    </Link>
-                  </div>
+                  </>
                 )}
               </div>
-              
-              <Link to="/employers" className={`py-2 ${isActive('/employers') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                Employers
-              </Link>
-              <Link to="/contact" className={`py-2 ${isActive('/contact') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                Contact
-              </Link>
-              
-              {session && (
-                <>
-                  <Link to="/dashboard" className={`py-2 ${isActive('/dashboard') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                    Dashboard
-                  </Link>
-                  <Link to="/profile" className={`py-2 ${isActive('/profile') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                    My Profile
-                  </Link>
-                  <Link to="/settings" className={`py-2 ${isActive('/settings') ? 'text-primary font-medium' : 'text-gray-600'}`}>
-                    Settings
-                  </Link>
-                </>
-              )}
-            </nav>
-
-            <div className="flex flex-col space-y-3">
-              {session ? (
-                <Button 
-                  onClick={handleLogout} 
-                  className="w-full justify-center bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </Button>
-              ) : (
-                <>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-center border-primary text-primary hover:bg-primary/5 transition-all"
-                    onClick={handleLogin}
-                  >
-                    Login
-                  </Button>
-                  <Button 
-                    className="w-full justify-center bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all"
-                    onClick={handleSignUp}
-                  >
-                    Sign Up
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </header>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.header>
   );
 };
 

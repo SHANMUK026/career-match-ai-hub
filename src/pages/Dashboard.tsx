@@ -7,8 +7,25 @@ import ProfileOverview from '@/components/dashboard/ProfileOverview';
 import JobRecommendations from '@/components/dashboard/JobRecommendations';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { DashboardStats } from '@/components/dashboard/DashboardStats';
+import { RecentApplications } from '@/components/dashboard/RecentApplications';
 
 const Dashboard = () => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-950">
       <Header />
@@ -28,45 +45,48 @@ const Dashboard = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Dashboard Stats Overview */}
+          <motion.div
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+            className="mb-8"
+          >
+            <DashboardStats />
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          >
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
+              <motion.div variants={itemVariants}>
                 <ProfileOverview />
               </motion.div>
               
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
+              <motion.div variants={itemVariants}>
                 <JobRecommendations />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <RecentApplications />
               </motion.div>
             </div>
 
             {/* Right Column */}
             <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
+              <motion.div variants={itemVariants}>
                 <QuickActions />
               </motion.div>
               
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
+              <motion.div variants={itemVariants}>
                 <ActivityFeed />
               </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </main>
       <Footer />

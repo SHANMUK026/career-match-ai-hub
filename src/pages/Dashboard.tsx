@@ -3,8 +3,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { ProfileOverview } from '@/components/dashboard/ProfileOverview';
-import { JobRecommendations } from '@/components/dashboard/JobRecommendations';
+import ProfileOverview from '@/components/dashboard/ProfileOverview';
+import JobRecommendations from '@/components/dashboard/JobRecommendations';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 
